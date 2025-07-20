@@ -1,16 +1,18 @@
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt6 import QtCore
 from PyQt6.uic import loadUi
-
-from models.producto import Producto
     
 class ProductosWindow(QMainWindow):
-    def __init__(self, service, usuario_logeado):
+    def __init__(self, productos_service, categorias_service, usuario_logeado, validador):
         super().__init__()
-        self.service = service
-        self.usuario_logeado = usuario_logeado
         loadUi("ui/designer/productos.ui", self)
+        self.service = productos_service
+        self.categorias_service = categorias_service
+        self.usuario_logeado = usuario_logeado
+        self.validador = validador
+
         self.configurar()
+        self.cargar_categorias()
         
         self.btnAgregar.clicked.connect(self.agregar_producto)
         self.btnEliminar.clicked.connect(self.eliminar_producto)
@@ -37,6 +39,13 @@ class ProductosWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Ocurrió un error al cargar productos: {e}")
 
+    def cargar_categorias(self):
+        self.inputCategoria.clear()
+        self.inputCategoria.addItem("")
+        categorias = self.categorias_service.listar_categorias()
+        for categoria in categorias:
+            self.inputCategoria.addItem(categoria.nombre, categoria.id_categoria)
+
 
     def limpiar_campos(self):
         self.inputNombre.clear()
@@ -46,65 +55,44 @@ class ProductosWindow(QMainWindow):
         self.inputCategoria.setCurrentIndex(0)
         self.inputMedida.clear()
 
+    def restaurar_tabla_y_limpiar(self):
+        self.cargar_productos()
+        self.limpiar_campos()
+
     def agregar_producto(self):
+        nombre = self.inputNombre.text().strip()
+        categoria = self.inputCategoria.currentText()
+        ubicacion = self.inputUbicacion.currentText().strip() or None
+        medida_texto = self.inputMedida.text().strip()
+        medida = medida_texto if medida_texto and medida_texto.lower() != "none" else None
+        cantidad_text = self.inputCantidad.text().strip()
+        precio_text = self.inputPrecio.text().strip()
+
+        errores, producto = self.validador.validar(
+            nombre=nombre,
+            categoria=categoria,
+            ubicacion=ubicacion,
+            cantidad_text=cantidad_text,
+            precio_text=precio_text,
+            medida=medida,
+            creado_por=self.usuario_logeado.id_usuario,
+            id_producto=None 
+        )
+
+        if errores:
+            QMessageBox.warning(self, "Error", "\n".join(errores))
+            return
+
+        if self.service.existe_producto(nombre, ubicacion, medida):
+            QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre, ubicación y medida.")
+            return
+
         try:
-            nombre = self.inputNombre.text().strip()
-            categoria = self.inputCategoria.currentText().strip()
-            ubicacion = self.inputUbicacion.currentText().strip()
-            medida_texto = self.inputMedida.text().strip()
-
-            if medida_texto == '':
-                medida = None
-            else:
-                try:
-                    medida = float(medida_texto)
-                    if medida < 0:
-                        QMessageBox.warning(self, "Error", "La medida no puede ser negativa.")
-                        return
-                except ValueError:
-                    QMessageBox.warning(self, "Error", "Medida debe ser un número válido.")
-                    return
-
-            if not nombre:
-                QMessageBox.warning(self, "Error", "El nombre no puede estar vacío.")
-                return
-            
-            try:
-                cantidad = int(self.inputCantidad.text())
-                if cantidad <= 0:
-                    QMessageBox.warning(self, "Error", "La cantidad debe ser un número mayor que cero.")
-                    return
-                
-                precio = float(self.inputPrecio.text())
-                if precio <= 0:
-                    QMessageBox.warning(self, "Error", "El precio debe ser un número mayor que cero.")
-                    return
-            except ValueError:
-                QMessageBox.warning(self, "Error", "Cantidad debe ser un número entero y precio un número decimal.")
-                return
-
-            producto = Producto(
-                nombre=nombre,
-                categoria=categoria,
-                ubicacion=ubicacion,
-                medida=medida,
-                cantidad=cantidad,
-                precio_unitario=precio,
-                creado_por=self.usuario_logeado.id_usuario
-            )
-            print("Medida:", repr(medida))
-
-            if self.service.existe_producto(nombre, ubicacion):
-                QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre y ubicación.")
-                return
-            
             self.service.agregar(producto)
             QMessageBox.information(self, "Éxito", "Producto agregado correctamente.")
-            self.limpiar_campos()
-            self.cargar_productos()
-
+            self.restaurar_tabla_y_limpiar()
         except Exception as e:
-           QMessageBox.critical(self, "Error", str(e))
+            QMessageBox.critical(self, "Error", f"Ocurrió un error: {str(e)}")
 
 
     def editar_producto(self):
@@ -113,92 +101,45 @@ class ProductosWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Seleccioná una fila para editar.")
             return
 
+        id_producto = int(self.tabla_productos.item(fila, 0).text())
+        nombre = self.tabla_productos.item(fila, 1).text().strip()
+        categoria = self.tabla_productos.item(fila, 2).text().strip()
+        ubicacion = self.tabla_productos.item(fila, 3).text().strip() or None
+        medida_texto = self.tabla_productos.item(fila, 4).text().strip()
+        medida = medida_texto if medida_texto.lower() != "none" else None
+        cantidad_text = self.tabla_productos.item(fila, 5).text().strip()
+        precio_text = self.tabla_productos.item(fila, 6).text().strip()
+
+        errores, producto = self.validador.validar(
+            nombre=nombre,
+            categoria=categoria,
+            ubicacion=ubicacion,
+            cantidad_text=cantidad_text,
+            precio_text=precio_text,
+            medida=medida,
+            creado_por=self.usuario_logeado,
+            id_producto=id_producto
+        )
+
+        if errores:
+            QMessageBox.warning(self, "Error", "\n".join(errores))
+            self.restaurar_tabla_y_limpiar()
+            return
+
+        # Verificar duplicados
+        if self.service.existe_producto(nombre, ubicacion, medida, id_excluir=id_producto):
+            QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre y ubicación.")
+            self.restaurar_tabla_y_limpiar()
+            return
+
+        # Editar
         try:
-            id_producto = int(self.tabla_productos.item(fila, 0).text())
-            nombre = self.tabla_productos.item(fila, 1).text().strip()
-            if not nombre:
-                QMessageBox.warning(self, "Error", "El nombre no puede estar vacío.")
-                return
-
-            categoria = self.tabla_productos.item(fila, 2).text().strip()
-            categorias_validas = ['Planta', 'Maceta', 'Tierra']
-
-            if categoria not in categorias_validas:
-                QMessageBox.warning(self, "Error", f"La categoría debe ser una de: {', '.join(categorias_validas)}")
-                return
-            
-            ubicacion = self.tabla_productos.item(fila, 3).text().strip() 
-            ubicaciones_validas = ['', 'Exterior', 'Interior', 'Ambos']
-
-            if ubicacion not in ubicaciones_validas:
-                QMessageBox.warning(self, "Error", f"La ubicación debe ser una de: {', '.join(ubicaciones_validas)}")
-                return
-
-            medida_text = self.tabla_productos.item(fila, 4).text().strip()
-            if medida_text == '' or medida_text.lower() == 'none':
-                medida = None
-            else:
-                try:
-                    medida = float(medida_text)
-                    if medida < 0:
-                        QMessageBox.warning(self, "Error", "La medida no puede ser negativa.")
-                        return
-                except ValueError:
-                    QMessageBox.warning(self, "Error", "La medida debe ser un número válido.")
-                    return
-                
-            cantidad_text = self.tabla_productos.item(fila, 5).text().strip()
-            precio_text = self.tabla_productos.item(fila, 6).text().strip()
-            if not cantidad_text:
-                QMessageBox.warning(self, "Error", "La cantidad no puede estar vacía.")
-                return
-
-            if not precio_text:
-                QMessageBox.warning(self, "Error", "El precio no puede estar vacío.")
-                return
-            
-            try:
-                cantidad = int(cantidad_text)
-                if cantidad <= 0:
-                    QMessageBox.warning(self, "Error", "La cantidad debe ser un número mayor que cero.")
-                    return
-            except ValueError:
-                QMessageBox.warning(self, "Error", "La cantidad debe ser un número entero válido.")
-                return
-
-            try:
-                precio = float(precio_text)
-                if precio <= 0:
-                    QMessageBox.warning(self, "Error", "El precio debe ser un número mayor que cero.")
-                    return
-            except ValueError:
-                QMessageBox.warning(self, "Error", "El precio debe ser un número decimal válido.")
-                return
-
-            producto = Producto(
-                id_producto=id_producto,
-                nombre=nombre,
-                categoria=categoria,
-                ubicacion=ubicacion,
-                medida=medida,
-                cantidad=cantidad,
-                precio_unitario=precio,
-                creado_por=self.usuario_logeado
-            )
-            print(f"Medida: {repr(producto.medida)}")
-
-            if self.service.existe_producto(nombre, ubicacion, id_excluir=id_producto):
-                QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre y ubicación.")
-                return
-
             self.service.editar(producto)
             QMessageBox.information(self, "Éxito", "Producto editado correctamente.")
-            self.cargar_productos()
-
+            self.restaurar_tabla_y_limpiar()
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Ocurrió un error: {str(e)}")
             self.cargar_productos()
-
 
     def eliminar_producto(self):
         fila = self.tabla_productos.currentRow()
@@ -218,28 +159,42 @@ class ProductosWindow(QMainWindow):
         if confirmacion == QMessageBox.StandardButton.Yes:
             self.service.eliminar(id_producto)
             QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
-            self.cargar_productos()
-            self.limpiar_campos()
+            self.restaurar_tabla_y_limpiar()
 
 
     def poblar_tabla(self, productos):
+        productos_con_categoria = []
+
+        for producto in productos:
+            nombre_categoria = self.categorias_service.obtener_nombre_por_id(producto.categoria_id)
+            productos_con_categoria.append((nombre_categoria, producto))
+
+        productos_con_categoria.sort(key=lambda x: x[0] or "")
+
         self.tabla_productos.setRowCount(len(productos))
-        for fila, producto in enumerate(productos):
+        
+        for fila, (nombre_categoria, producto) in enumerate(productos_con_categoria):
+            total = producto.cantidad * producto.precio_unitario  
+
             datos = [
                 producto.id_producto,
                 producto.nombre,
-                producto.categoria,
+                nombre_categoria, 
                 producto.ubicacion,
                 producto.medida,
                 producto.cantidad,
-                producto.precio_unitario
+                producto.precio_unitario,
+                round(total, 2)
             ]
+
             for col, dato in enumerate(datos):
                 texto = '' if dato is None else str(dato)
-                item = QTableWidgetItem(str(texto))
+                item = QTableWidgetItem(texto)
                 item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 self.tabla_productos.setItem(fila, col, item)
 
+        header = self.tabla_productos.horizontalHeader()
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
 
 
     def buscar_producto(self):

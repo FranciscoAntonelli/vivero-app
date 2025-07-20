@@ -8,7 +8,7 @@ class ProductosRepository:
     def buscar(self, nombre="", id_usuario=None):
         productos = []
         with self.conexion.cursor() as cursor:
-            columnas = "id_producto, nombre, categoria, ubicacion, medida, cantidad, precio_unitario, creado_por"
+            columnas = "id_producto, nombre, categoria_id, ubicacion, medida, cantidad, precio_unitario, creado_por"
 
             condiciones = ["creado_por = %s"]
             parametros = [id_usuario]
@@ -23,7 +23,7 @@ class ProductosRepository:
                 f"""SELECT {columnas} 
                     FROM productos 
                     WHERE {where_clause} 
-                    ORDER BY nombre""",
+                    ORDER BY categoria_id, nombre""",
                 tuple(parametros)
             )
 
@@ -31,7 +31,7 @@ class ProductosRepository:
                 producto = Producto(
                     id_producto=fila[0],
                     nombre=fila[1],
-                    categoria=fila[2],
+                    categoria_id=fila[2],
                     ubicacion=fila[3],
                     medida=fila[4],
                     cantidad=fila[5],
@@ -51,14 +51,14 @@ class ProductosRepository:
     def agregar(self, producto):
         with self.conexion.cursor() as cursor:
             cursor.execute("""
-                INSERT INTO productos (nombre, ubicacion, medida, cantidad, categoria, precio_unitario, creado_por)
+                INSERT INTO productos (nombre, ubicacion, medida, cantidad, categoria_id, precio_unitario, creado_por)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 producto.nombre,
                 producto.ubicacion,
                 producto.medida,
                 producto.cantidad,
-                producto.categoria,
+                producto.categoria_id,
                 producto.precio_unitario,
                 producto.creado_por
             ))
@@ -71,7 +71,7 @@ class ProductosRepository:
                 consulta = """
                     UPDATE productos
                     SET nombre = %s,
-                        categoria = %s,
+                        categoria_id = %s,
                         ubicacion = %s,
                         medida = %s,
                         cantidad = %s,
@@ -80,7 +80,7 @@ class ProductosRepository:
                 """
                 valores = (
                     producto.nombre,
-                    producto.categoria,
+                    producto.categoria_id,
                     producto.ubicacion,
                     producto.medida, 
                     producto.cantidad,
@@ -99,16 +99,25 @@ class ProductosRepository:
             resultado = cursor.fetchone()
             return resultado[0] if resultado else "Desconocido"
         
-    def existe_producto(self, nombre, ubicacion, id_excluir=None):
+    def existe_producto(self, nombre, ubicacion, medida, id_excluir=None):
         cursor = self.conexion.cursor()
         if id_excluir:
             cursor.execute(
-                "SELECT COUNT(*) FROM productos WHERE nombre = %s AND ubicacion = %s AND id_producto != %s",
-                (nombre, ubicacion, id_excluir)
+                """
+                SELECT COUNT(*) FROM productos 
+                WHERE nombre = %s AND ubicacion = %s 
+                AND (medida = %s OR (medida IS NULL AND %s::text IS NULL)) 
+                AND id_producto != %s
+                """,
+                (nombre, ubicacion, medida, medida, id_excluir)
             )
         else:
             cursor.execute(
-                "SELECT COUNT(*) FROM productos WHERE nombre = %s AND ubicacion = %s",
-                (nombre, ubicacion)
+                """
+                SELECT COUNT(*) FROM productos 
+                WHERE nombre = %s AND ubicacion = %s 
+                AND (medida = %s OR (medida IS NULL AND %s::text IS NULL))
+                """,
+                (nombre, ubicacion, medida, medida)
             )
         return cursor.fetchone()[0] > 0

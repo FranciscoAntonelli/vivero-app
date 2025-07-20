@@ -1,8 +1,6 @@
 class ProductosService:
-
     def __init__(self, repo):
         self.repo = repo
-
 
     def buscar(self, nombre=None, id_usuario=None):
         return self.repo.buscar(nombre, id_usuario)
@@ -28,5 +26,5 @@ class ProductosService:
     def obtener_nombre_por_id(self, id_producto):
         return self.repo.obtener_nombre_por_id(id_producto)
     
-    def existe_producto(self, nombre, ubicacion, id_excluir=None):
-        return self.repo.existe_producto(nombre, ubicacion, id_excluir)
+    def existe_producto(self, nombre, ubicacion, medida=None, id_excluir=None):
+        return self.repo.existe_producto(nombre, ubicacion, medida, id_excluir)

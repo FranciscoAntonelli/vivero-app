@@ -1,22 +1,20 @@
 from PyQt6.QtWidgets import QMainWindow, QMessageBox
 from PyQt6.uic import loadUi
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal
 
 class LoginWindow(QMainWindow):
     login_exitoso = pyqtSignal(object)
 
-    def __init__(self, login_service, on_login_success):
+    def __init__(self, login_service, validador_login, on_login_success):
         super().__init__()
         loadUi("ui/designer/login.ui", self)
         self.configurar()
 
         self.login_service = login_service
+        self.validador_login = validador_login
         self.on_login_success = on_login_success
 
-        # Conectar botón de login a la función autenticar
         self.boton_login.clicked.connect(self.autenticar) 
-
-        # Conectar la señal al callback externo
         self.login_exitoso.connect(self.on_login_success)
 
     def configurar(self):
@@ -28,8 +26,9 @@ class LoginWindow(QMainWindow):
         usuario = self.usuario_input.text()
         clave = self.clave_input.text()
 
-        if not usuario or not clave:
-            QMessageBox.warning(self, "Error", "Por favor, ingrese usuario y contraseña.")
+        errores = self.validador_login.validar(usuario, clave)
+        if errores:
+            QMessageBox.warning(self, "Error de validación", "\n".join(errores))
             return
 
         try:
