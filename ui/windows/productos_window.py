@@ -61,11 +61,17 @@ class ProductosWindow(QMainWindow):
 
     def agregar_producto(self):
         nombre = self.inputNombre.text().strip()
+
         categoria = self.inputCategoria.currentText()
-        ubicacion = self.inputUbicacion.currentText().strip() or None
+
+        ubicacion = self.inputUbicacion.currentText().strip()
+        ubicacion = ubicacion if ubicacion else None  
+
         medida_texto = self.inputMedida.text().strip()
         medida = medida_texto if medida_texto and medida_texto.lower() != "none" else None
+
         cantidad_text = self.inputCantidad.text().strip()
+
         precio_text = self.inputPrecio.text().strip()
 
         errores, producto = self.validador.validar(
@@ -102,12 +108,19 @@ class ProductosWindow(QMainWindow):
             return
 
         id_producto = int(self.tabla_productos.item(fila, 0).text())
+
         nombre = self.tabla_productos.item(fila, 1).text().strip()
+
         categoria = self.tabla_productos.item(fila, 2).text().strip()
-        ubicacion = self.tabla_productos.item(fila, 3).text().strip() or None
+
+        ubicacion = self.tabla_productos.item(fila, 3).text().strip()
+        ubicacion = ubicacion if ubicacion else None 
+
         medida_texto = self.tabla_productos.item(fila, 4).text().strip()
         medida = medida_texto if medida_texto.lower() != "none" else None
+        
         cantidad_text = self.tabla_productos.item(fila, 5).text().strip()
+
         precio_text = self.tabla_productos.item(fila, 6).text().strip()
 
         errores, producto = self.validador.validar(

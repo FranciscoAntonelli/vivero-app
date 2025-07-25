@@ -12,12 +12,16 @@ class ProductosService:
             raise Exception(f"No se pudo eliminar el producto: {str(e)}")
 
     def agregar(self, producto):
+        if self.existe_producto(producto.nombre, producto.ubicacion, producto.medida):
+            raise Exception("Ya existe un producto con ese nombre, ubicación y medida.")
         try:
             self.repo.agregar(producto)
         except Exception as e:
             raise Exception(f"No se pudo agregar el producto: {str(e)}")
         
     def editar(self, producto):
+        if self.existe_producto(producto.nombre, producto.ubicacion, producto.medida, id_excluir=producto.id_producto):
+            raise Exception("Ya existe un producto con ese nombre, ubicación y medida.")
         try:
             self.repo.editar(producto)
         except Exception as e:

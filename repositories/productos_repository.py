@@ -101,23 +101,27 @@ class ProductosRepository:
         
     def existe_producto(self, nombre, ubicacion, medida, id_excluir=None):
         cursor = self.conexion.cursor()
+
+        condiciones = [
+            "nombre = %s",
+            "ubicacion IS NOT DISTINCT FROM %s",
+            "medida IS NOT DISTINCT FROM %s"
+        ]
+        parametros = [nombre, ubicacion, medida]
+
         if id_excluir:
-            cursor.execute(
-                """
-                SELECT COUNT(*) FROM productos 
-                WHERE nombre = %s AND ubicacion = %s 
-                AND (medida = %s OR (medida IS NULL AND %s::text IS NULL)) 
-                AND id_producto != %s
-                """,
-                (nombre, ubicacion, medida, medida, id_excluir)
-            )
-        else:
-            cursor.execute(
-                """
-                SELECT COUNT(*) FROM productos 
-                WHERE nombre = %s AND ubicacion = %s 
-                AND (medida = %s OR (medida IS NULL AND %s::text IS NULL))
-                """,
-                (nombre, ubicacion, medida, medida)
-            )
-        return cursor.fetchone()[0] > 0
+            condiciones.append("id_producto != %s")
+            parametros.append(id_excluir)
+
+        query = f"""
+            SELECT COUNT(*) FROM productos
+            WHERE {' AND '.join(condiciones)}
+        """
+
+        print("QUERY:", query)
+        print("PARAMETROS:", parametros)
+
+        cursor.execute(query, tuple(parametros))
+        resultado = cursor.fetchone()[0]
+        print("RESULTADO:", resultado)
+        return resultado > 0
