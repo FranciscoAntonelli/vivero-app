@@ -3,13 +3,14 @@ from PyQt6 import QtCore
 from PyQt6.uic import loadUi
     
 class ProductosWindow(QMainWindow):
-    def __init__(self, productos_service, categorias_service, usuario_logeado, validador):
+    def __init__(self, productos_service, categorias_service, usuario_logeado, validador, impresora):
         super().__init__()
         loadUi("ui/designer/productos.ui", self)
         self.service = productos_service
         self.categorias_service = categorias_service
         self.usuario_logeado = usuario_logeado
         self.validador = validador
+        self.impresora = impresora
 
         self.configurar()
         self.cargar_categorias()
@@ -17,8 +18,8 @@ class ProductosWindow(QMainWindow):
         self.btnAgregar.clicked.connect(self.agregar_producto)
         self.btnEliminar.clicked.connect(self.eliminar_producto)
         self.btnEditar.clicked.connect(self.editar_producto)
-        
         self.buscarProducto.textChanged.connect(self.buscar_producto)
+        self.btnImprimir.clicked.connect(self.imprimir_productos)
 
         self.cargar_productos()
 
@@ -215,3 +216,7 @@ class ProductosWindow(QMainWindow):
         id_usuario = self.usuario_logeado.id_usuario
         productos = self.service.buscar(nombre, id_usuario)
         self.poblar_tabla(productos)
+
+    def imprimir_productos(self):
+        productos = self.service.buscar(id_usuario=self.usuario_logeado.id_usuario)
+        self.impresora.imprimir(productos, self)

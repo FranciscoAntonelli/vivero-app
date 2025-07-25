@@ -18,8 +18,17 @@ from validators.validador_login import ValidadorLogin
 
 from models.ubicacion import Ubicacion
 
+from utils.impresion.impresora_productos import ImpresoraProductos
+
 def iniciar_aplicacion(usuario_logeado):
-    ventana = ProductosWindow(productos_service, categorias_service, usuario_logeado, validador_producto)
+    impresora = ImpresoraProductos()
+    ventana = ProductosWindow(
+        productos_service,
+        categorias_service,
+        usuario_logeado,
+        validador_producto,
+        impresora
+    )
     ventana.show()
     app.productos_window = ventana
 
