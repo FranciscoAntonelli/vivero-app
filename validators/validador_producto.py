@@ -36,6 +36,10 @@ class ValidadorProducto:
             errores.append("El precio debe ser un número decimal válido.")
             precio = None
 
+        if medida:
+            if len(medida.strip()) > 30:
+                errores.append("La medida es demasiado larga.")
+
         if errores:
             return errores, None
         
