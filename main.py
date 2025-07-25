@@ -5,10 +5,12 @@ import sys
 from repositories.productos_repository import ProductosRepository
 from repositories.categorias_repository import CategoriasRepository
 from repositories.usuario_repository import UsuarioRepository
+from repositories.meta_repository import MetaRepository
 
 from services.productos_service import ProductosService
 from services.login_service import LoginService
 from services.categorias_service import CategoriasService
+from services.meta_service import MetaService
 
 from ui.windows.productos_window import ProductosWindow
 from ui.windows.login_window import LoginWindow
@@ -27,7 +29,8 @@ def iniciar_aplicacion(usuario_logeado):
         categorias_service,
         usuario_logeado,
         validador_producto,
-        impresora
+        impresora,
+        productos_meta_service
     )
     ventana.show()
     app.productos_window = ventana
@@ -66,11 +69,13 @@ if __name__ == "__main__":
     productos_repo = ProductosRepository(conexion)
     usuario_repo = UsuarioRepository(conexion)
     categorias_repo = CategoriasRepository(conexion)
+    productos_meta_repo = MetaRepository(conexion)
 
     # Services
     productos_service = ProductosService(productos_repo)
     login_service = LoginService(usuario_repo)
     categorias_service = CategoriasService(categorias_repo)
+    productos_meta_service = MetaService(productos_meta_repo)
 
     # Validadores
     categorias = categorias_service.listar_categorias()  # Objetos de categoria

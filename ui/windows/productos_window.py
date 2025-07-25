@@ -3,7 +3,7 @@ from PyQt6 import QtCore
 from PyQt6.uic import loadUi
     
 class ProductosWindow(QMainWindow):
-    def __init__(self, productos_service, categorias_service, usuario_logeado, validador, impresora):
+    def __init__(self, productos_service, categorias_service, usuario_logeado, validador, impresora, productos_meta_service):
         super().__init__()
         loadUi("ui/designer/productos.ui", self)
         self.service = productos_service
@@ -11,6 +11,7 @@ class ProductosWindow(QMainWindow):
         self.usuario_logeado = usuario_logeado
         self.validador = validador
         self.impresora = impresora
+        self.meta_service = productos_meta_service
 
         self.configurar()
         self.cargar_categorias()
@@ -37,6 +38,7 @@ class ProductosWindow(QMainWindow):
         try:
             productos = self.service.buscar(id_usuario=self.usuario_logeado.id_usuario)
             self.poblar_tabla(productos)
+            self.actualizar_label_modificacion()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Ocurrió un error al cargar productos: {e}")
 
@@ -96,6 +98,8 @@ class ProductosWindow(QMainWindow):
 
         try:
             self.service.agregar(producto)
+            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
+            self.actualizar_label_modificacion()
             QMessageBox.information(self, "Éxito", "Producto agregado correctamente.")
             self.restaurar_tabla_y_limpiar()
         except Exception as e:
@@ -149,6 +153,8 @@ class ProductosWindow(QMainWindow):
         # Editar
         try:
             self.service.editar(producto)
+            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
+            self.actualizar_label_modificacion()
             QMessageBox.information(self, "Éxito", "Producto editado correctamente.")
             self.restaurar_tabla_y_limpiar()
         except Exception as e:
@@ -172,6 +178,8 @@ class ProductosWindow(QMainWindow):
 
         if confirmacion == QMessageBox.StandardButton.Yes:
             self.service.eliminar(id_producto)
+            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
+            self.actualizar_label_modificacion()
             QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
             self.restaurar_tabla_y_limpiar()
 
@@ -220,3 +228,15 @@ class ProductosWindow(QMainWindow):
     def imprimir_productos(self):
         productos = self.service.buscar(id_usuario=self.usuario_logeado.id_usuario)
         self.impresora.imprimir(productos, self)
+
+    def actualizar_label_modificacion(self):
+        try:
+            print(f"Buscando última modificación para usuario: {self.usuario_logeado}")
+            fecha = self.meta_service.obtener_ultima_modificacion(self.usuario_logeado.id_usuario)
+            if fecha:
+                self.lbl_ultima_modificacion.setText(f"Última modificación: {fecha.strftime('%d/%m/%Y %H:%M:%S')}")
+            else:
+                self.lbl_ultima_modificacion.setText("Última modificación: No disponible")
+        except Exception as e:
+            print("Error al obtener la última modificación:", e)
+            self.lbl_ultima_modificacion.setText(f"Última modificación: Error al obtener")
