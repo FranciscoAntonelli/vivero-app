@@ -16,10 +16,12 @@ class ImpresoraProductos:
             y += 30
 
             # Encabezados con ancho fijo
-            header = f"{'Nombre':<25}{'Cantidad':>10}{'Precio':>15}{'Subtotal':>15}"
+            header = f"{'Nombre':<25}{'Precio':>15}{'Cantidad':>14}{'Subtotal':>14}"
             painter.drawText(100, y, header)
             y += 20
-            painter.drawLine(100, y, 500, y)
+
+            # Línea superior
+            painter.drawLine(100, y, 800, y)
             y += 20
 
             total_general = 0  
@@ -28,14 +30,16 @@ class ImpresoraProductos:
                 subtotal = producto.precio_unitario * producto.cantidad
                 total_general += subtotal
 
-                linea = f"{producto.nombre:<25}{producto.cantidad:>10}{producto.precio_unitario:>15.2f}{subtotal:>15.2f}"
+                linea = f"{producto.nombre:<25}{producto.precio_unitario:>15.2f}{producto.cantidad:>10}{subtotal:>18.2f}"
                 painter.drawText(100, y, linea)
                 y += 30
             
             y += 20
-            painter.drawLine(100, y, 500, y)
+
+            # Línea inferior
+            painter.drawLine(100, y, 800, y)
             y += 30
-            total_line = f"{'TOTAL GENERAL:':<50}${total_general:>.2f}"
+            total_line = f"{'TOTAL GENERAL:':<60}${total_general:>.2f}"
             painter.drawText(100, y, total_line)
 
             painter.end()
