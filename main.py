@@ -35,35 +35,12 @@ def iniciar_aplicacion(usuario_logeado):
     ventana.show()
     app.productos_window = ventana
 
-def crear_usuario_por_defecto(conexion):
-    cursor = conexion.cursor()
-    cursor.execute("SELECT COUNT(*) FROM usuarios")
-    cantidad = cursor.fetchone()[0]
-    if cantidad == 0:
-        cursor.execute(
-            "INSERT INTO usuarios (nombre_usuario, contraseña) VALUES (%s, %s)",
-            ('admin', 'admin123')
-        )
-        conexion.commit()
-
-def crear_usuario_prueba(conexion):
-    cursor = conexion.cursor()
-    cursor.execute("SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s", ('usuario2',))
-    if cursor.fetchone()[0] == 0:
-        cursor.execute(
-            "INSERT INTO usuarios (nombre_usuario, contraseña) VALUES (%s, %s)",
-            ('usuario2', 'clave456')
-        )
-        conexion.commit()
-
 # ==================== Inicio ====================
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # DB
     conexion = get_connection()
-    crear_usuario_por_defecto(conexion)
-    crear_usuario_prueba(conexion)
     
     # Repositories
     productos_repo = ProductosRepository(conexion)
