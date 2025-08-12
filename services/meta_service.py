@@ -3,7 +3,8 @@ class MetaService:
         self.meta_repository = meta_repository
 
     def obtener_ultima_modificacion(self, usuario):
-        return self.meta_repository.obtener_fecha_modificacion(usuario)
+        fecha = self.meta_repository.obtener_fecha_modificacion(usuario)
+        return fecha if fecha else "No registrada"
     
     def registrar_modificacion(self, usuario):
         self.meta_repository.actualizar_fecha_modificacion(usuario)
