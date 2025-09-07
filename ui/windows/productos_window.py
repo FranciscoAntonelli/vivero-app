@@ -1,194 +1,126 @@
-from PyQt6.QtWidgets import QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt6 import QtCore
+from PyQt6.QtGui import QIcon
 from PyQt6.uic import loadUi
+
+from controllers.producto_popup_controller import ProductoPopupController
+from ui.windows.productos_popup import ProductoPopup
     
 class ProductosWindow(QMainWindow):
-    def __init__(self, productos_service, categorias_service, usuario_logeado, validador, impresora, productos_meta_service):
+    def __init__(self, controller, usuario_logeado):
         super().__init__()
-        loadUi("ui/designer/productos.ui", self)
-        self.service = productos_service
-        self.categorias_service = categorias_service
+        self.controller = controller
         self.usuario_logeado = usuario_logeado
-        self.validador = validador
-        self.impresora = impresora
-        self.meta_service = productos_meta_service
+        self.inicializarUI()
+
+    def inicializarUI(self):
+        loadUi("ui/designer/productos.ui", self)
 
         self.configurar()
-        self.cargar_categorias()
-        
+
         self.btnAgregar.clicked.connect(self.agregar_producto)
-        self.btnEliminar.clicked.connect(self.eliminar_producto)
-        self.btnEditar.clicked.connect(self.editar_producto)
         self.buscarProducto.textChanged.connect(self.buscar_producto)
         self.btnImprimir.clicked.connect(self.imprimir_productos)
 
         self.cargar_productos()
+        self.show()
+
 
     def configurar(self):
         self.tabla_productos.verticalHeader().setVisible(False)
         self.tabla_productos.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-        print(self.geometry())
-        
         self.setMinimumSize(self.geometry().width(), self.geometry().height())
         self.setMaximumSize(self.geometry().width(), self.geometry().height())
         
 
     def cargar_productos(self):
         try:
-            productos = self.service.buscar(id_usuario=self.usuario_logeado.id_usuario)
+            productos = self.controller.obtener_productos(self.usuario_logeado.id_usuario)
             self.poblar_tabla(productos)
             self.actualizar_label_modificacion()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Ocurrió un error al cargar productos: {e}")
 
-    def cargar_categorias(self):
-        self.inputCategoria.clear()
-        self.inputCategoria.addItem("")
-        categorias = self.categorias_service.listar_categorias()
-        for categoria in categorias:
-            self.inputCategoria.addItem(categoria.nombre, categoria.id_categoria)
-
-
-    def limpiar_campos(self):
-        self.inputNombre.clear()
-        self.inputUbicacion.setCurrentIndex(0)
-        self.inputCantidad.clear()
-        self.inputPrecio.clear()
-        self.inputCategoria.setCurrentIndex(0)
-        self.inputMedida.clear()
-
-    def restaurar_tabla_y_limpiar(self):
-        self.cargar_productos()
-        self.limpiar_campos()
-
     def agregar_producto(self):
-        nombre = self.inputNombre.text().strip()
-
-        categoria = self.inputCategoria.currentText()
-
-        ubicacion = self.inputUbicacion.currentText().strip()
-        ubicacion = ubicacion if ubicacion else None  
-
-        medida_texto = self.inputMedida.text().strip()
-        medida = medida_texto if medida_texto and medida_texto.lower() != "none" else None
-
-        cantidad_text = self.inputCantidad.text().strip()
-
-        precio_text = self.inputPrecio.text().strip()
-
-        errores, producto = self.validador.validar(
-            nombre=nombre,
-            categoria=categoria,
-            ubicacion=ubicacion,
-            cantidad_text=cantidad_text,
-            precio_text=precio_text,
-            medida=medida,
-            creado_por=self.usuario_logeado.id_usuario,
-            id_producto=None 
+        popup_controller = ProductoPopupController(
+            producto_service=self.controller.service,
+            categorias_service=self.controller.categorias_service,
+            validador=self.controller.validador
         )
-
-        if errores:
-            QMessageBox.warning(self, "Error", "\n".join(errores))
-            return
-
-        if self.service.existe_producto(nombre, ubicacion, medida):
-            QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre, ubicación y medida.")
-            return
-
-        try:
-            self.service.agregar(producto)
-            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
+        popup = ProductoPopup(popup_controller, self.usuario_logeado)
+        if popup.exec():
+            self.controller.registrar_modificacion(self.usuario_logeado.id_usuario)
             self.actualizar_label_modificacion()
-            QMessageBox.information(self, "Éxito", "Producto agregado correctamente.")
-            self.restaurar_tabla_y_limpiar()
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Ocurrió un error: {str(e)}")
-
-
-    def editar_producto(self):
-        fila = self.tabla_productos.currentRow()
-        if fila == -1:
-            QMessageBox.warning(self, "Error", "Seleccioná una fila para editar.")
-            return
-
-        id_producto = int(self.tabla_productos.item(fila, 0).text())
-
-        nombre = self.tabla_productos.item(fila, 1).text().strip()
-
-        categoria = self.tabla_productos.item(fila, 2).text().strip()
-
-        ubicacion = self.tabla_productos.item(fila, 3).text().strip()
-        ubicacion = ubicacion if ubicacion else None 
-
-        medida_texto = self.tabla_productos.item(fila, 4).text().strip()
-        medida = medida_texto if medida_texto.lower() != "none" else None
-        
-        cantidad_text = self.tabla_productos.item(fila, 5).text().strip()
-
-        precio_text = self.tabla_productos.item(fila, 6).text().strip()
-
-        errores, producto = self.validador.validar(
-            nombre=nombre,
-            categoria=categoria,
-            ubicacion=ubicacion,
-            cantidad_text=cantidad_text,
-            precio_text=precio_text,
-            medida=medida,
-            creado_por=self.usuario_logeado,
-            id_producto=id_producto
-        )
-
-        if errores:
-            QMessageBox.warning(self, "Error", "\n".join(errores))
-            self.restaurar_tabla_y_limpiar()
-            return
-
-        # Verificar duplicados
-        if self.service.existe_producto(nombre, ubicacion, medida, id_excluir=id_producto):
-            QMessageBox.warning(self, "Error", "Ya existe un producto con ese nombre y ubicación.")
-            self.restaurar_tabla_y_limpiar()
-            return
-
-        # Editar
-        try:
-            self.service.editar(producto)
-            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
-            self.actualizar_label_modificacion()
-            QMessageBox.information(self, "Éxito", "Producto editado correctamente.")
-            self.restaurar_tabla_y_limpiar()
-        except Exception as e:
-            QMessageBox.warning(self, "Error", f"Ocurrió un error: {str(e)}")
             self.cargar_productos()
 
-    def eliminar_producto(self):
-        fila = self.tabla_productos.currentRow()
-        if fila == -1:
-            QMessageBox.warning(self, "Error", "Seleccioná un producto para eliminar.")
-            return
+    def editar_producto(self, producto):
+        popup_controller = ProductoPopupController(
+            producto_service=self.controller.service,
+            categorias_service=self.controller.categorias_service,
+            validador=self.controller.validador
+        )
+        popup = ProductoPopup(popup_controller, self.usuario_logeado, producto)
+        if popup.exec():
+            self.controller.registrar_modificacion(self.usuario_logeado.id_usuario)
+            self.actualizar_label_modificacion()
+            self.cargar_productos()
+    
 
-        id_producto = int(self.tabla_productos.item(fila, 0).text())
-
+    def eliminar_producto(self, producto):
         confirmacion = QMessageBox.question(
             self,
             "Confirmar eliminación",
-            "¿Estás seguro de que querés eliminar este producto?",
+            f"¿Estás seguro de que querés eliminar '{producto.nombre}'?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
 
         if confirmacion == QMessageBox.StandardButton.Yes:
-            self.service.eliminar(id_producto)
-            self.meta_service.registrar_modificacion(self.usuario_logeado.id_usuario)
-            self.actualizar_label_modificacion()
-            QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
-            self.restaurar_tabla_y_limpiar()
+            try:
+                self.controller.eliminar_producto(producto.id_producto)
+                self.controller.registrar_modificacion(self.usuario_logeado.id_usuario) # Registro la modificaicon para actualizar el label
+                self.actualizar_label_modificacion()
+                self.cargar_productos()  # Recargo la tabla
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"No se pudo eliminar el producto: {e}")
+
+
+    def _crear_item(self, texto):
+        item = QTableWidgetItem(str(texto) if texto is not None else "")
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        return item
+    
+    def _crear_acciones(self, producto):
+        widget = QWidget()
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+        btn_editar = self._crear_boton("resources/icons/edit.png", "Editar producto", lambda: self.editar_producto(producto))
+        btn_borrar = self._crear_boton("resources/icons/delete.png", "Eliminar producto", lambda: self.eliminar_producto(producto))
+
+        layout.addWidget(btn_editar)
+        layout.addWidget(btn_borrar)
+        widget.setLayout(layout)
+        return widget 
+    
+
+    def _crear_boton(self, icon_path, tooltip, callback):
+        btn = QPushButton()
+        btn.setIcon(QIcon(icon_path))
+        btn.setIconSize(QtCore.QSize(24, 24))
+        btn.setFixedSize(32, 32)
+        btn.setStyleSheet("QPushButton { border: none; background: transparent; }")
+        btn.setToolTip(tooltip)
+        btn.clicked.connect(callback)
+        return btn
 
 
     def poblar_tabla(self, productos):
         productos_con_categoria = []
 
         for producto in productos:
-            nombre_categoria = self.categorias_service.obtener_nombre_por_id(producto.categoria_id)
+            nombre_categoria = self.controller.obtener_nombre_categoria(producto.categoria_id)
             productos_con_categoria.append((nombre_categoria, producto))
 
         productos_con_categoria.sort(key=lambda x: x[0] or "")
@@ -198,22 +130,27 @@ class ProductosWindow(QMainWindow):
         for fila, (nombre_categoria, producto) in enumerate(productos_con_categoria):
             total = producto.cantidad * producto.precio_unitario  
 
+            # Si la ubicación o medida son None o "--- Seleccionar ---", muestro vacio
+            ubicacion = "" if producto.ubicacion in (None, "--- Seleccionar ---") else producto.ubicacion
+            medida = "" if producto.medida in (None, "--- Seleccionar ---") else producto.medida
+
             datos = [
                 producto.id_producto,
                 producto.nombre,
                 nombre_categoria, 
-                producto.ubicacion,
-                producto.medida,
+                ubicacion,
+                medida,
                 producto.cantidad,
                 producto.precio_unitario,
                 round(total, 2)
             ]
 
             for col, dato in enumerate(datos):
-                texto = '' if dato is None else str(dato)
-                item = QTableWidgetItem(texto)
-                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-                self.tabla_productos.setItem(fila, col, item)
+                self.tabla_productos.setItem(fila, col, self._crear_item(dato))
+
+            acciones = self._crear_acciones(producto)
+            self.tabla_productos.setCellWidget(fila, len(datos), acciones)
+            self.tabla_productos.setRowHeight(fila, 36)
 
         header = self.tabla_productos.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
@@ -222,21 +159,20 @@ class ProductosWindow(QMainWindow):
     def buscar_producto(self):
         nombre = self.buscarProducto.text()
         id_usuario = self.usuario_logeado.id_usuario
-        productos = self.service.buscar(nombre, id_usuario)
+        productos = self.controller.obtener_productos(id_usuario, nombre)
         self.poblar_tabla(productos)
 
     def imprimir_productos(self):
-        productos = self.service.buscar(id_usuario=self.usuario_logeado.id_usuario)
-        self.impresora.imprimir(productos, self)
+        productos = self.controller.obtener_productos(self.usuario_logeado.id_usuario)
+        self.controller.imprimir(productos, self)
 
     def actualizar_label_modificacion(self):
         try:
-            print(f"Buscando última modificación para usuario: {self.usuario_logeado}")
-            fecha = self.meta_service.obtener_ultima_modificacion(self.usuario_logeado.id_usuario)
+            fecha = self.controller.obtener_ultima_modificacion(self.usuario_logeado.id_usuario)
             if fecha:
                 self.lbl_ultima_modificacion.setText(f"Última modificación: {fecha.strftime('%d/%m/%Y %H:%M:%S')}")
             else:
                 self.lbl_ultima_modificacion.setText("Última modificación: No disponible")
         except Exception as e:
-            print("Error al obtener la última modificación:", e)
-            self.lbl_ultima_modificacion.setText(f"Última modificación: Error al obtener")
+            print(f"[ERROR actualizar_label_modificacion] {e}")
+            self.lbl_ultima_modificacion.setText("Última modificación: Error al obtener")
