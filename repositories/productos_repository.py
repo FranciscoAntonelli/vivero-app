@@ -24,7 +24,7 @@ class ProductosRepository:
                     FROM productos 
                     WHERE {where_clause} 
                     ORDER BY categoria_id, nombre""",
-                tuple(parametros)
+                parametros
             )
 
             for fila in cursor.fetchall():
@@ -92,12 +92,6 @@ class ProductosRepository:
         except Exception as e:
             self.conexion.rollback()
             raise Exception(f"No se pudo editar el producto: {e}")
-
-    def obtener_nombre_por_id(self, id_producto):
-        with self.conexion.cursor() as cursor:
-            cursor.execute("SELECT nombre FROM productos WHERE id_producto = %s", (id_producto,))
-            resultado = cursor.fetchone()
-            return resultado[0] if resultado else "Desconocido"
         
     def existe_producto(self, nombre, ubicacion, medida, id_excluir=None):
         cursor = self.conexion.cursor()
@@ -118,10 +112,6 @@ class ProductosRepository:
             WHERE {' AND '.join(condiciones)}
         """
 
-        print("QUERY:", query)
-        print("PARAMETROS:", parametros)
-
-        cursor.execute(query, tuple(parametros))
+        cursor.execute(query, parametros)
         resultado = cursor.fetchone()[0]
-        print("RESULTADO:", resultado)
         return resultado > 0

@@ -26,9 +26,6 @@ class ProductosService:
             self.repo.editar(producto)
         except Exception as e:
             raise Exception(f"No se pudo editar el producto: {str(e)}")
-        
-    def obtener_nombre_por_id(self, id_producto):
-        return self.repo.obtener_nombre_por_id(id_producto)
     
     def existe_producto(self, nombre, ubicacion, medida=None, id_excluir=None):
         return self.repo.existe_producto(nombre, ubicacion, medida, id_excluir)
