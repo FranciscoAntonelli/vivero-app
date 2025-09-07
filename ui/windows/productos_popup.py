@@ -18,8 +18,13 @@ class ProductoPopup(QDialog):
         self.cargar_categorias()
         self.cargar_ubicaciones()
 
+        # Cambia el titulo segun lo que aprete el usuario
         if producto:
+            self.setWindowTitle("Editar producto")
             self.cargar_datos(producto)
+        else:
+            self.setWindowTitle("Agregar producto")
+
         
         self.btnGuardar.clicked.connect(self.guardar_productos)
 
