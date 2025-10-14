@@ -8,8 +8,8 @@
 
 ## Descripción
 
-El proyecto consiste en desarrollar un sistema de inventario para un vivero que comercializa plantas y productos relacionados (macetas, tierra, insumos, etc.).  
-Esta primera entrega está enfocada en el **registro de productos**, permitiendo guardar atributos específicos como:
+El proyecto tiene como objetivo desarrollar un sistema de inventario para un vivero que vende plantas y otros productos relacionados, como macetas, tierra y distintos insumos.  
+En esta primera etapa, el trabajo se centra en el **registro de productos**, guardando información como:
 
 - Nombre  
 - Categoría  
@@ -18,76 +18,107 @@ Esta primera entrega está enfocada en el **registro de productos**, permitiendo
 - Precio  
 - Cantidad disponible  
 
-Además, registra internamente **la última modificación realizada por cada usuario** sobre los productos.
+Además, el sistema lleva un registro interno de **la última modificación realizada por cada usuario** sobre los productos.
 
 ---
 
 ## Justificación
 
-El emprendimiento familiar actualmente gestiona su inventario de forma manual, lo que genera errores y desorganización.  
-Este sistema busca iniciar la **digitalización del negocio**, mejorando el control y la trazabilidad de los productos.
+El emprendimiento familiar actualmente gestiona su inventario de forma manual, lo que puede generar errores y dificultades en el control de productos.  
+Este sistema busca iniciar una **transformación tecnológica**, con un registro digital fiable y ordenado de los productos.
 
 ---
 
 ## Objetivos
 
-1. Facilitar el registro y la organización de productos del vivero.  
+1. Facilitar el registro y la organización de productos en el inventario del vivero.  
 2. Garantizar la integridad y consistencia de los datos registrados.  
-3. Crear una interfaz amigable y accesible.  
-4. Implementar un sistema de login simple para proteger el acceso.  
-5. Registrar la fecha y hora de la última modificación para control y trazabilidad.  
+3. Crear una interfaz amigable que permita a los usuarios registrar productos fácilmente.  
+4. Implementar un sistema de login simple para proteger el acceso al inventario.  
+5. Registrar la fecha y hora de la última modificación de productos por usuario, para control y trazabilidad.
 
 ---
 
 ## Destinatario
 
-Emprendedores o pequeños viveros que desean comenzar a digitalizar la gestión de su inventario de manera **simple, accesible y escalable**.
+Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su inventario, con un enfoque **simple, accesible y escalable**.
 
 ---
 
 ## Alcance
 
-- **Registro de productos** con datos como nombre, categoría, ubicación, medida, precio y cantidad.  
-- **Validaciones** de entrada:  
-  - Campos obligatorios  
-  - Números positivos  
-  - Manejo de valores `None` cuando no aplique ubicación o medida  
-- **Login básico** (usuario y contraseña)  
-- **Conexión a base de datos PostgreSQL**  
-- **Mensajes de error o confirmación** según el resultado del guardado  
+1. **Registro de productos** con información como:  
+   - Nombre  
+   - Categoría (Planta, Maceta, Tierra, Otro)  
+   - Ubicación (“Interior”, “Exterior” o “Ambas”)  
+   - Medida (si aplica)  
+   - Precio y cantidad  
+
+2. **Validación de datos** ingresados:  
+   - Valores positivos  
+   - Campos obligatorios  
+   - Conversión de números desde texto  
+   - Permitir `None` en ubicación o medida si no aplican  
+
+3. **Login básico** por usuario (usuario/contraseña)  
+
+4. **Almacenamiento en base de datos PostgreSQL**  
+
+5. **Mensajes de confirmación o error** según el caso  
 
 ---
 
 ## Flujo de trabajo
 
-1. **Inicio de sesión:** el usuario ingresa con credenciales válidas.  
-2. **Acceso al registro de productos:** tras el login, se accede a la pantalla principal.  
-3. **Carga de producto:** se ingresan los datos del producto.  
-4. **Validación automática:** se verifica el formato y obligatoriedad de los campos.  
-5. **Confirmar y guardar:** se registra el producto o se muestran errores.  
-6. **Modificación:** se actualiza la fecha y hora de la última modificación al editar o eliminar.  
+1. **Iniciar registro**  
+   - Responsable: Usuario  
+   - Acción: Ingresar al sistema mediante login mínimo  
+   - Validación: Verificación de credenciales con mensajes de error si son incorrectas  
+
+2. **Acceder al registro de productos**  
+   - Acción: Acceder a la pantalla principal luego del login  
+
+3. **Cargar información del producto**  
+   - Nombre  
+   - Ubicación sugerida (Interior / Exterior / Ambas)  
+   - Medida (si corresponde)  
+   - Precio unitario  
+   - Cantidad en stock  
+   - Categoría  
+
+4. **Validación automática**  
+   - Verificación de campos obligatorios  
+   - Validación de formato (números, medida, etc.)  
+
+5. **Confirmar y guardar**  
+   - Acción: Botón “Guardar producto”  
+   - Resultado: Registro exitoso o mensaje de error  
+
+6. **Registrar modificación**  
+   - Acción: Cada vez que un usuario agrega, edita o elimina un producto, se actualiza la fecha y hora de su última modificación  
+   - Resultado: Registro automático en la base de datos para trazabilidad  
 
 ---
 
 ## Exclusiones del Proyecto
 
-No se incluyen en esta etapa:
+Esta primera etapa **no incluye**:
 
 - Gestión de ventas  
-- Reportes gráficos o estadísticas  
-- Login con roles o permisos avanzados  
+- Generación de reportes gráficos o estadísticas  
+- Login con múltiples roles o permisos avanzados  
 - Gestión de clientes o proveedores  
 
 ---
 
 ## Beneficios Esperados
 
-- Digitalización completa del inventario  
-- Reducción de errores manuales  
-- Organización eficiente  
-- Base escalable para futuras mejoras  
-- Acceso controlado mediante login  
-- Validaciones desacopladas y robustas  
+- Digitalización del control de inventario  
+- Reducción de errores por registros manuales  
+- Mejora en la organización de productos  
+- Base escalable para futuras funciones  
+- Control de acceso mediante autenticación básica  
+- Validación robusta de datos con principios SOLID  
 - Mayor confiabilidad gracias a pruebas unitarias  
 
 ---
@@ -95,41 +126,43 @@ No se incluyen en esta etapa:
 ## Investigación e Inconvenientes
 
 ### Investigación
-- Bibliotecas gráficas (PyQt6)  
-- Estructura de base de datos  
+
+- Evaluación de bibliotecas gráficas  
+- Diseño de estructura de base de datos  
 - Validación de formularios  
 
 ### Inconvenientes
+
 - Algunos productos no requieren ubicación o medida → se permite `None`  
-- Cambios en la estructura podrían requerir rediseño  
+- Cambios en la estructura del inventario podrían requerir rediseño  
 - Posibles dificultades de uso para usuarios no técnicos  
 
 ---
 
 ## Planificación
 
-| Fase                  | Actividad                                                        | Inicio      | Fin         |
-|------------------------|------------------------------------------------------------------|-------------|-------------|
-| Etapa de Análisis      | Definición de requerimientos                                    | 06/01/2025  | 10/01/2025  |
-|                        | Diseño de base de datos y atributos                             | 11/01/2025  | 15/01/2025  |
-| Diseño del Sistema     | Creación del modelo de base de datos                            | 16/01/2025  | 22/01/2025  |
-|                        | Diseño de interfaz gráfica                                      | 23/01/2025  | 30/01/2025  |
-| Desarrollo del Sistema | Backend en Python + PostgreSQL (gestión básica de inventario)   | 31/01/2025  | 09/03/2025  |
-|                        | Desarrollo de interfaz gráfica (formularios)                    | 10/03/2025  | 31/03/2025  |
-| Pruebas y Ajustes      | Validación con datos reales y ajustes                           | 16/04/2025  | 15/07/2025  |
-| Ajustes finales        | Retoques finales del sistema                                    | 16/06/2025  | 22/07/2025  |
+| Fase                  | Actividad                                                        | Fecha de Inicio | Fecha de Término |
+|------------------------|-----------------------------------------------------------------|----------------|----------------|
+| Etapa de Análisis      | Definición de requerimientos                                     | 06/01/2025     | 10/01/2025     |
+|                        | Diseño de la base de datos y atributos                            | 11/01/2025     | 15/01/2025     |
+| Diseño del Sistema     | Creación del modelo de base de datos                               | 16/01/2025     | 22/01/2025     |
+|                        | Diseño de la interfaz gráfica                                     | 23/01/2025     | 30/01/2025     |
+| Desarrollo del Sistema | Backend en Python con PostgreSQL (gestión básica de inventario)    | 31/01/2025     | 09/03/2025     |
+|                        | Desarrollo de interfaz gráfica (formularios)                       | 10/03/2025     | 31/03/2025     |
+| Pruebas y Ajustes      | Validación con datos reales y ajustes en el sistema               | 16/04/2025     | 15/07/2025     |
+| Ajustes finales        | Retoques finales del sistema                                       | 16/06/2025     | 22/07/2025     |
 
 ---
 
 ## Desarrollo
 
-- **Lenguaje:** Python 3  
-- **Base de datos:** PostgreSQL  
-- **Interfaz gráfica:** PyQt6  
-- **Conexión BD:** psycopg  
-- **Arquitectura:** Principios SOLID  
-- **Validadores desacoplados**  
-- **Pruebas unitarias:** para servicios y validadores  
+- **Lenguaje de Programación:** Python 3  
+- **Base de Datos:** PostgreSQL  
+- **Interfaz Gráfica:** PyQt6  
+- **Conexión a BD:** psycopg  
+- **Pantalla principal:** Registro de productos  
+- **Validadores:** Desacoplados según principios SOLID  
+- **Pruebas unitarias** implementadas para servicios y validadores  
 
 ---
 
@@ -141,22 +174,22 @@ No se incluyen en esta etapa:
 
 ## Conclusión
 
-El sistema establece una base sólida para digitalizar el control de inventario de un vivero familiar.  
-Permite registrar productos de forma ordenada y confiable, reduce errores y mejora la trazabilidad.  
-Su arquitectura modular y el uso de validadores independientes facilitan futuras expansiones (ventas, reportes, usuarios, etc.).
+El sistema proporciona una base funcional para comenzar la digitalización del vivero familiar.  
+Permite registrar productos con sus atributos clave de manera ordenada, reduciendo errores y mejorando la organización del inventario.  
+Incluye un sistema de login para garantizar acceso controlado y la gestión de categorías independientes, lo que lo hace robusto y preparado para futuras funcionalidades.
 
 ---
 
 ## Registro de Cambios
 
 | Fecha       | Versión | Cambios realizados |
-|-------------|---------|------------------|
-| 13/10/2025  | 1.5     | Implementación de validadores desacoplados y pruebas unitarias |
-| 21/07/2025  | 1.4     | Se agregó la tabla `productos_meta` para registrar la última modificación por usuario |
-| 19/07/2025  | 1.3     | Login básico y validadores según principios SOLID |
-| 10/06/2025  | 1.2     | Alcance reducido centrado en registro de productos |
-| 29/03/2025  | 1.1     | Se agregó la sección “Justificación” |
-| 29/03/2025  | 1.0     | Documento inicial |
+|------------|---------|------------------|
+| 13/10/2025 | 1.5     | Implementación de validadores desacoplados, pruebas unitarias |
+| 21/07/2025 | 1.4     | Incorporación de tabla `productos_meta` para registrar última modificación por usuario |
+| 19/07/2025 | 1.3     | Login básico de usuario, gestión de categorías y validadores desacoplados según SOLID |
+| 10/06/2025 | 1.2     | Documento adaptado para entrega parcial centrada en registro de productos |
+| 29/03/2025 | 1.1     | Se agregó sección "Justificación" |
+| 29/03/2025 | 1.0     | Documento inicial |
 
 ---
 
