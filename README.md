@@ -1,4 +1,4 @@
-# 🌱 Gestión de Inventario de un Vivero  
+# Gestión de Inventario de un Vivero  
 ### Proyecto de Prácticas Profesionales Supervisadas (PPS) – 1° Etapa  
 **Universidad Tecnológica Nacional (UTN) – C.U.V.L. – T.U.S.I.**  
 **Autor:** Francisco Antonelli  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📝 Descripción
+## Descripción
 
 El proyecto consiste en desarrollar un sistema de inventario para un vivero que comercializa plantas y productos relacionados (macetas, tierra, insumos, etc.).  
 Esta primera entrega está enfocada en el **registro de productos**, permitiendo guardar atributos específicos como:
@@ -22,14 +22,14 @@ Además, registra internamente **la última modificación realizada por cada usu
 
 ---
 
-## 🎯 Justificación
+## Justificación
 
 El emprendimiento familiar actualmente gestiona su inventario de forma manual, lo que genera errores y desorganización.  
 Este sistema busca iniciar la **digitalización del negocio**, mejorando el control y la trazabilidad de los productos.
 
 ---
 
-## 🎯 Objetivos
+## Objetivos
 
 1. Facilitar el registro y la organización de productos del vivero.  
 2. Garantizar la integridad y consistencia de los datos registrados.  
@@ -39,13 +39,13 @@ Este sistema busca iniciar la **digitalización del negocio**, mejorando el cont
 
 ---
 
-## 👥 Destinatario
+## Destinatario
 
 Emprendedores o pequeños viveros que desean comenzar a digitalizar la gestión de su inventario de manera **simple, accesible y escalable**.
 
 ---
 
-## 📦 Alcance
+## Alcance
 
 - **Registro de productos** con datos como nombre, categoría, ubicación, medida, precio y cantidad.  
 - **Validaciones** de entrada:  
@@ -58,7 +58,7 @@ Emprendedores o pequeños viveros que desean comenzar a digitalizar la gestión 
 
 ---
 
-## ⚙️ Flujo de trabajo
+## Flujo de trabajo
 
 1. **Inicio de sesión:** el usuario ingresa con credenciales válidas.  
 2. **Acceso al registro de productos:** tras el login, se accede a la pantalla principal.  
@@ -69,7 +69,7 @@ Emprendedores o pequeños viveros que desean comenzar a digitalizar la gestión 
 
 ---
 
-## 🚫 Exclusiones del Proyecto
+## Exclusiones del Proyecto
 
 No se incluyen en esta etapa:
 
@@ -80,7 +80,7 @@ No se incluyen en esta etapa:
 
 ---
 
-## ✅ Beneficios Esperados
+## Beneficios Esperados
 
 - Digitalización completa del inventario  
 - Reducción de errores manuales  
@@ -92,7 +92,7 @@ No se incluyen en esta etapa:
 
 ---
 
-## 🔬 Investigación e Inconvenientes
+## Investigación e Inconvenientes
 
 ### Investigación
 - Bibliotecas gráficas (PyQt6)  
@@ -106,7 +106,7 @@ No se incluyen en esta etapa:
 
 ---
 
-## 🗓️ Planificación
+## Planificación
 
 | Fase                  | Actividad                                                        | Inicio      | Fin         |
 |------------------------|------------------------------------------------------------------|-------------|-------------|
@@ -121,7 +121,7 @@ No se incluyen en esta etapa:
 
 ---
 
-## 🧩 Desarrollo
+## Desarrollo
 
 - **Lenguaje:** Python 3  
 - **Base de datos:** PostgreSQL  
@@ -133,13 +133,13 @@ No se incluyen en esta etapa:
 
 ---
 
-## 🗃️ Modelo Entidad–Relación
+## Modelo Entidad–Relación
 
-![Modelo ER](screenshots/modelo_er.PNG)
+![Modelo ER](docs/screenshots/modelo_er.PNG)
 
 ---
 
-## 🧠 Conclusión
+## Conclusión
 
 El sistema establece una base sólida para digitalizar el control de inventario de un vivero familiar.  
 Permite registrar productos de forma ordenada y confiable, reduce errores y mejora la trazabilidad.  
@@ -147,7 +147,7 @@ Su arquitectura modular y el uso de validadores independientes facilitan futuras
 
 ---
 
-## 🕒 Registro de Cambios
+## Registro de Cambios
 
 | Fecha       | Versión | Cambios realizados |
 |-------------|----------|--------------------|
