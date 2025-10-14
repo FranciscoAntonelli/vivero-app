@@ -6,26 +6,14 @@ class ProductosService:
         return self.repo.buscar(nombre, id_usuario)
     
     def eliminar(self, id_producto):
-        try:
-            self.repo.eliminar(id_producto)
-        except Exception as e:
-            raise Exception(f"No se pudo eliminar el producto: {str(e)}")
+        # Solo elimina
+        self.repo.eliminar(id_producto)
 
     def agregar(self, producto):
-        if self.existe_producto(producto.nombre, producto.ubicacion, producto.medida):
-            raise Exception("Ya existe un producto con ese nombre, ubicación y medida.")
-        try:
-            self.repo.agregar(producto)
-        except Exception as e:
-            raise Exception(f"No se pudo agregar el producto: {str(e)}")
+        self.repo.agregar(producto)
         
     def editar(self, producto):
-        if self.existe_producto(producto.nombre, producto.ubicacion, producto.medida, id_excluir=producto.id_producto):
-            raise Exception("Ya existe un producto con ese nombre, ubicación y medida.")
-        try:
-            self.repo.editar(producto)
-        except Exception as e:
-            raise Exception(f"No se pudo editar el producto: {str(e)}")
+        self.repo.editar(producto)
     
     def existe_producto(self, nombre, ubicacion, medida=None, id_excluir=None):
         return self.repo.existe_producto(nombre, ubicacion, medida, id_excluir)

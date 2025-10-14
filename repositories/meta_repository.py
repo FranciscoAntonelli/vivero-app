@@ -1,5 +1,6 @@
 from models.producto_meta import ProductoMeta
 
+
 class MetaRepository:
     def __init__(self, conexion):
         self.conexion = conexion
@@ -30,5 +31,10 @@ class MetaRepository:
             FROM productos_meta
             WHERE usuario_id = %s
         """, (usuario_id,))
-        resultado = cursor.fetchone()
-        return ProductoMeta(*resultado) if resultado else None
+        fila = cursor.fetchone()
+        return self.mapear_a_producto_meta(fila)
+
+    def mapear_a_producto_meta(self, fila):
+        if fila:
+            return ProductoMeta(fila[0], fila[1])
+        return None

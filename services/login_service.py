@@ -6,5 +6,5 @@ class LoginService:
     def verificar_credenciales(self, nombre_usuario, clave):
         usuario = self.usuario_repository.obtener_por_nombre(nombre_usuario)
         if usuario and usuario.clave == clave:
-            return usuario  
-        return False
+            return usuario 
+        return None

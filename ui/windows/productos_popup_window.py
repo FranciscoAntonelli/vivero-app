@@ -1,36 +1,42 @@
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from models.producto import Producto
 from models.ubicacion import Ubicacion
 
 class ProductoPopup(QDialog):
-    def __init__(self, popup_controller, usuario_logeado, producto=None):
+    def __init__(self, popup_use_case, usuario_logeado, producto=None):
         super().__init__()
-        self.inicializarUI(popup_controller, usuario_logeado, producto)
+        self.inicializarUI(popup_use_case, usuario_logeado, producto)
 
-    def inicializarUI(self, popup_controller, usuario_logeado, producto):
-        loadUi("ui/designer/producto_popup.ui", self)
-        self.controller = popup_controller   
+    def inicializarUI(self, popup_use_case, usuario_logeado, producto):
+        self._use_case = popup_use_case
         self.usuario_logeado = usuario_logeado
         self.producto = producto
-        self.configurar()
+        self.resultado_guardado = None
+
+        self._cargar_ui()
+        self._configurar_ventana()
+        self._cargar_datos_iniciales()
+        self._conectar_signales()
+
+    def _cargar_ui(self):
+        loadUi("ui/designer/producto_popup.ui", self)
+
+    def _configurar_ventana(self):
+        self.setMinimumSize(self.geometry().width(), self.geometry().height())
+        self.setMaximumSize(self.geometry().width(), self.geometry().height())
+
+    def _cargar_datos_iniciales(self):
         self.cargar_categorias()
         self.cargar_ubicaciones()
-
-        # Cambia el titulo segun lo que aprete el usuario
-        if producto:
+        if self.producto:
             self.setWindowTitle("Editar producto")
-            self.cargar_datos(producto)
+            self.cargar_datos(self.producto)
         else:
             self.setWindowTitle("Agregar producto")
 
-        
+    def _conectar_signales(self):
         self.btnGuardar.clicked.connect(self.guardar_productos)
-
-    def configurar(self):
-        self.setMinimumSize(self.geometry().width(), self.geometry().height())
-        self.setMaximumSize(self.geometry().width(), self.geometry().height())
 
     def cargar_datos(self, producto):
         self.inputNombre.setText(producto.nombre)
@@ -39,9 +45,8 @@ class ProductoPopup(QDialog):
         self.inputCantidad.setValue(producto.cantidad or 0)
         self.inputPrecio.setValue(producto.precio_unitario or 0.0)
 
-        # Selecciona categoria usando el controller
+        nombre_categoria = self._use_case.categorias_service.obtener_nombre_por_id(producto.categoria_id)
         for i in range(self.inputCategoria.count()):
-            nombre_categoria = self.controller.categorias_service.obtener_nombre_por_id(producto.categoria_id)
             if self.inputCategoria.itemText(i) == nombre_categoria:
                 self.inputCategoria.setCurrentIndex(i)
                 break
@@ -50,12 +55,11 @@ class ProductoPopup(QDialog):
     def cargar_categorias(self):
         self.inputCategoria.clear()
         self.inputCategoria.addItem("--- Seleccionar ---", None)
-        for categoria in self.controller.listar_categorias():  
+        for categoria in self._use_case.listar_categorias():
             self.inputCategoria.addItem(categoria.nombre, categoria.id_categoria)
 
     def cargar_ubicaciones(self): 
         self.inputUbicacion.clear()
-        #Opcion vacio al inicio
         self.inputUbicacion.addItem("--- Seleccionar ---", None) 
         for ubicacion in Ubicacion: 
             self.inputUbicacion.addItem(ubicacion.value, ubicacion.name)
@@ -72,10 +76,13 @@ class ProductoPopup(QDialog):
             "creado_por": self.usuario_logeado.id_usuario
         }
 
-        ok, errores = self.controller.validar_y_guardar(producto_dict, self.producto)
-        if not ok:
-            QMessageBox.warning(self, "Error", "\n".join(errores))
+        resultado = self._use_case.guardar_producto(producto_dict, self.producto)
+
+        self.resultado_guardado = resultado # Guardo el resultado para leerlo
+
+        if not resultado.exito:
+            QMessageBox.warning(self, "Error", "\n".join(resultado.errores))
             return
 
-        self.accept()  # cierra el popup
+        self.accept()  # Devuelve True y cierra el popup
 

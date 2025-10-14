@@ -6,8 +6,5 @@ class CategoriasService:
         return self.repo.obtener_todas()
     
     def obtener_nombre_por_id(self, id_categoria):
-        categorias = self.listar_categorias()
-        for categoria in categorias:
-            if categoria.id_categoria == id_categoria:
-                return categoria.nombre
-        return ""
+        categoria = self.repo.obtener_por_id(id_categoria)  
+        return categoria.nombre if categoria else ""

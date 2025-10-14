@@ -15,3 +15,6 @@ def get_connection():
     except Exception as e:
         print(f"[ERROR DB] {e}")
         return None
+    
+
+conexion = get_connection()
