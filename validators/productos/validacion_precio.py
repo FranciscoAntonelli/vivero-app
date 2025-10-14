@@ -6,9 +6,7 @@ class ValidacionPrecio(IValidacionProducto):
         errores = []
         precio = producto_data.get("precio_unitario")
 
-        if precio is None:
-            errores.append("El precio debe ser un número decimal válido.")
-        elif precio <= 0:
+        if precio == 0:
             errores.append("El precio debe ser mayor que cero.")
 
         return errores
