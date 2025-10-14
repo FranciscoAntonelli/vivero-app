@@ -150,13 +150,13 @@ Su arquitectura modular y el uso de validadores independientes facilitan futuras
 ## Registro de Cambios
 
 | Fecha       | Versión | Cambios realizados |
-|-------------|----------|--------------------|
-| 13/10/2025  | 1.5 | Implementación de validadores desacoplados y pruebas unitarias |
-| 21/07/2025  | 1.4 | Se agregó la tabla `productos_meta` para registrar la última modificación por usuario |
-| 19/07/2025  | 1.3 | Login básico y validadores según principios SOLID |
-| 10/06/2025  | 1.2 | Alcance reducido centrado en registro de productos |
-| 29/03/2025  | 1.1 | Se agregó la sección “Justificación” |
-| 29/03/2025  | 1.0 | Documento inicial |
+|-------------|---------|------------------|
+| 13/10/2025  | 1.5     | Implementación de validadores desacoplados y pruebas unitarias |
+| 21/07/2025  | 1.4     | Se agregó la tabla `productos_meta` para registrar la última modificación por usuario |
+| 19/07/2025  | 1.3     | Login básico y validadores según principios SOLID |
+| 10/06/2025  | 1.2     | Alcance reducido centrado en registro de productos |
+| 29/03/2025  | 1.1     | Se agregó la sección “Justificación” |
+| 29/03/2025  | 1.0     | Documento inicial |
 
 ---
 
