@@ -23,6 +23,7 @@ class MetaRepository:
             ON CONFLICT (usuario_id) DO UPDATE
             SET ultima_modificacion = EXCLUDED.ultima_modificacion
         """, (usuario_id,))
+        self.conexion.commit()
 
     def obtener_meta(self, usuario_id):
         cursor = self.conexion.cursor()

@@ -4,7 +4,6 @@
 **Autor:** Francisco Antonelli  
 **Año:** 2025  
 
----
 
 ## Descripción
 
@@ -20,14 +19,12 @@ En esta primera etapa, el trabajo se centra en el **registro de productos**, gua
 
 Además, el sistema lleva un registro interno de **la última modificación realizada por cada usuario** sobre los productos.
 
----
 
 ## Justificación
 
 El emprendimiento familiar actualmente gestiona su inventario de forma manual, lo que puede generar errores y dificultades en el control de productos.  
 Este sistema busca iniciar una **transformación tecnológica**, con un registro digital fiable y ordenado de los productos.
 
----
 
 ## Objetivos
 
@@ -37,13 +34,11 @@ Este sistema busca iniciar una **transformación tecnológica**, con un registro
 4. Implementar un sistema de login simple para proteger el acceso al inventario.  
 5. Registrar la fecha y hora de la última modificación de productos por usuario, para control y trazabilidad.
 
----
 
 ## Destinatario
 
 Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su inventario, con un enfoque **simple, accesible y escalable**.
 
----
 
 ## Alcance
 
@@ -54,11 +49,7 @@ Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su 
    - Medida (si aplica)  
    - Precio y cantidad  
 
-2. **Validación de datos** ingresados:  
-   - Valores positivos  
-   - Campos obligatorios  
-   - Conversión de números desde texto  
-   - Permitir `None` en ubicación o medida si no aplican  
+2. **Validación de datos** ingresados  
 
 3. **Login básico** por usuario (usuario/contraseña)  
 
@@ -66,7 +57,6 @@ Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su 
 
 5. **Mensajes de confirmación o error** según el caso  
 
----
 
 ## Flujo de trabajo
 
@@ -87,8 +77,6 @@ Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su 
    - Categoría  
 
 4. **Validación automática**  
-   - Verificación de campos obligatorios  
-   - Validación de formato (números, medida, etc.)  
 
 5. **Confirmar y guardar**  
    - Acción: Botón “Guardar producto”  
@@ -98,7 +86,6 @@ Emprendedores de viveros que necesiten comenzar a digitalizar la gestión de su 
    - Acción: Cada vez que un usuario agrega, edita o elimina un producto, se actualiza la fecha y hora de su última modificación  
    - Resultado: Registro automático en la base de datos para trazabilidad  
 
----
 
 ## Exclusiones del Proyecto
 
@@ -109,7 +96,6 @@ Esta primera etapa **no incluye**:
 - Login con múltiples roles o permisos avanzados  
 - Gestión de clientes o proveedores  
 
----
 
 ## Beneficios Esperados
 
@@ -121,7 +107,6 @@ Esta primera etapa **no incluye**:
 - Validación robusta de datos con principios SOLID  
 - Mayor confiabilidad gracias a pruebas unitarias  
 
----
 
 ## Investigación e Inconvenientes
 
@@ -133,11 +118,10 @@ Esta primera etapa **no incluye**:
 
 ### Inconvenientes
 
-- Algunos productos no requieren ubicación o medida → se permite `None`  
+- Algunos productos no requieren ubicación o medida → se permite ('').  
 - Cambios en la estructura del inventario podrían requerir rediseño  
 - Posibles dificultades de uso para usuarios no técnicos  
 
----
 
 ## Planificación
 
@@ -152,7 +136,6 @@ Esta primera etapa **no incluye**:
 | Pruebas y Ajustes      | Validación con datos reales y ajustes en el sistema               | 16/04/2025     | 15/07/2025     |
 | Ajustes finales        | Retoques finales del sistema                                       | 16/06/2025     | 22/07/2025     |
 
----
 
 ## Desarrollo
 
@@ -164,13 +147,11 @@ Esta primera etapa **no incluye**:
 - **Validadores:** Desacoplados según principios SOLID  
 - **Pruebas unitarias** implementadas para servicios y validadores  
 
----
 
 ## Modelo Entidad–Relación
 
 ![Modelo ER](docs/screenshots/modelo_er.PNG)
 
----
 
 ## Conclusión
 
@@ -178,7 +159,6 @@ El sistema proporciona una base funcional para comenzar la digitalización del v
 Permite registrar productos con sus atributos clave de manera ordenada, reduciendo errores y mejorando la organización del inventario.  
 Incluye un sistema de login para garantizar acceso controlado y la gestión de categorías independientes, lo que lo hace robusto y preparado para futuras funcionalidades.
 
----
 
 ## Registro de Cambios
 
