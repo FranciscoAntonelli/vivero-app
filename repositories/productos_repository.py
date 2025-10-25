@@ -49,20 +49,24 @@ class ProductosRepository:
             self.conexion.commit()
 
     def agregar(self, producto):
-        with self.conexion.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO productos (nombre, ubicacion, medida, cantidad, categoria_id, precio_unitario, creado_por)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (
-                producto.nombre,
-                producto.ubicacion,
-                producto.medida,
-                producto.cantidad,
-                producto.categoria_id,
-                producto.precio_unitario,
-                producto.creado_por
-            ))
-        self.conexion.commit()
+        try:
+            with self.conexion.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO productos (nombre, ubicacion, medida, cantidad, categoria_id, precio_unitario, creado_por)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    producto.nombre,
+                    producto.ubicacion,
+                    producto.medida,
+                    producto.cantidad,
+                    producto.categoria_id,
+                    producto.precio_unitario,
+                    producto.creado_por
+                ))
+            self.conexion.commit()
+        except Exception:
+            self.conexion.rollback()
+            raise
 
 
     def editar(self, producto):
@@ -89,29 +93,7 @@ class ProductosRepository:
                 )
                 cursor.execute(consulta, valores)
                 self.conexion.commit()
-        except Exception as e:
+        except Exception:
             self.conexion.rollback()
-            raise Exception(f"No se pudo editar el producto: {e}")
-        
-    def existe_producto(self, nombre, ubicacion, medida, id_excluir=None):
-        condiciones = [
-            "nombre = %s",
-            "ubicacion IS NOT DISTINCT FROM %s",
-            "medida IS NOT DISTINCT FROM %s"
-        ]
-        parametros = [nombre, ubicacion, medida]
-
-        if id_excluir:
-            condiciones.append("id_producto != %s")
-            parametros.append(id_excluir)
-
-        query = f"""
-            SELECT COUNT(*) FROM productos
-            WHERE {' AND '.join(condiciones)}
-        """
-
-        with self.conexion.cursor() as cursor:
-            cursor.execute(query, parametros)
-            resultado = cursor.fetchone()[0]
-
-        return resultado > 0
+            raise   
+    

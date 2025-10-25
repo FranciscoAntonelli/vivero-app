@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
+import psycopg
 
 from models.ubicacion import Ubicacion
 
@@ -64,25 +65,41 @@ class ProductoPopup(QDialog):
         for ubicacion in Ubicacion: 
             self.inputUbicacion.addItem(ubicacion.value, ubicacion.name)
 
-    def guardar_productos(self):
-        producto_dict = {
+    def _mostrar_errores(self, errores):
+        """Muestra los errores en la interfaz"""
+        QMessageBox.warning(self, "Error", "\n".join(errores))
+
+    def _obtener_datos_producto(self):
+        nombre = self.inputNombre.text().strip()
+        categoria = self.inputCategoria.currentData()
+        
+        ubicacion_raw = self.inputUbicacion.currentText().strip()
+        ubicacion = '' if ubicacion_raw == "--- seleccionar ---" else ubicacion_raw
+
+        medida = self.inputMedida.text().strip() or ''
+        cantidad = int(self.inputCantidad.text()) if self.inputCantidad.text() else 0
+        precio_unitario = float(self.inputPrecio.text().replace(",", ".")) if self.inputPrecio.text() else 0.0
+        creado_por = self.usuario_logeado.id_usuario
+
+        return {
             "id_producto": self.producto.id_producto if self.producto else None,
-            "nombre": self.inputNombre.text().strip(),
-            "categoria": self.inputCategoria.currentData(),
-            "ubicacion": self.inputUbicacion.currentText(),
-            "medida": self.inputMedida.text().strip() or None,
-            "cantidad": int(self.inputCantidad.text()) if self.inputCantidad.text() else 0,
-            "precio_unitario": float(self.inputPrecio.text().replace(",", ".")) if self.inputPrecio.text() else 0.0,
-            "creado_por": self.usuario_logeado.id_usuario
+            "nombre": nombre,
+            "categoria": categoria,
+            "ubicacion": ubicacion,
+            "medida": medida,
+            "cantidad": cantidad,
+            "precio_unitario": precio_unitario,
+            "creado_por": creado_por
         }
 
+    def guardar_productos(self):
+        producto_dict = self._obtener_datos_producto()
         resultado = self._use_case.guardar_producto(producto_dict, self.producto)
-
-        self.resultado_guardado = resultado # Guardo el resultado para leerlo
-
+        
         if not resultado.exito:
-            QMessageBox.warning(self, "Error", "\n".join(resultado.errores))
+            self._mostrar_errores(resultado.errores)
             return
-
-        self.accept()  # Devuelve True y cierra el popup
+        
+        self.resultado_guardado = resultado 
+        self.accept()
 

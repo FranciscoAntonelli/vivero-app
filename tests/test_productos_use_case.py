@@ -81,36 +81,3 @@ class TestProductosUseCase(unittest.TestCase):
         self.use_case.imprimir(productos, ventana)
 
         self.mock_impresora.imprimir.assert_called_once_with(productos, ventana)
-
-    def test_agregar_producto_valida_y_agrega(self):
-        self.mock_service.existe_producto.return_value = False
-
-        self.use_case.agregar_producto(self.producto)
-
-        self.mock_service.existe_producto.assert_called_once()
-        self.mock_service.agregar.assert_called_once_with(self.producto)
-
-    def test_agregar_producto_lanza_excepcion_si_duplicado(self):
-        self.mock_service.existe_producto.return_value = True
-
-        with self.assertRaises(Exception) as context:
-            self.use_case.agregar_producto(self.producto)
-
-        self.assertIn("Ya existe un producto", str(context.exception))
-        self.mock_service.agregar.assert_not_called()
-
-    def test_editar_producto_valida_y_edita(self):
-        self.mock_service.existe_producto.return_value = False
-
-        self.use_case.editar_producto(self.producto)
-
-        self.mock_service.existe_producto.assert_called_once()
-        self.mock_service.editar.assert_called_once_with(self.producto)
-
-    def test_editar_producto_lanza_excepcion_si_duplicado(self):
-        self.mock_service.existe_producto.return_value = True
-
-        with self.assertRaises(Exception):
-            self.use_case.editar_producto(self.producto)
-
-        self.mock_service.editar.assert_not_called()

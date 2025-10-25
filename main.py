@@ -28,7 +28,6 @@ from validators.productos.validacion_nombre import ValidacionNombre
 from validators.productos.validacion_cantidad import ValidacionCantidad
 from validators.productos.validacion_precio import ValidacionPrecio
 from validators.productos.validacion_medida import ValidacionMedida
-from validators.productos.validacion_duplicado_producto import ValidadorDuplicadoProducto
 
 from utils.impresion.impresora_productos import ImpresoraProductos
 
@@ -40,10 +39,35 @@ def iniciar_aplicacion(usuario_logeado):
     )
     app.productos_window = ventana
 
+# def crear_usuario_por_defecto(conexion):
+#     cursor = conexion.cursor()
+#     cursor.execute("SELECT COUNT(*) FROM usuarios")
+#     cantidad = cursor.fetchone()[0]
+#     if cantidad == 0:
+#         cursor.execute(
+#             "INSERT INTO usuarios (nombre_usuario, contraseña) VALUES (%s, %s)",
+#             ('admin', 'admin123')
+#         )
+#         conexion.commit()
+
+# def crear_usuario_prueba(conexion):
+#     cursor = conexion.cursor()
+#     cursor.execute("SELECT COUNT(*) FROM usuarios WHERE nombre_usuario = %s", ('usuario2',))
+#     if cursor.fetchone()[0] == 0:
+#         cursor.execute(
+#             "INSERT INTO usuarios (nombre_usuario, contraseña) VALUES (%s, %s)",
+#             ('usuario2', 'clave456')
+#         )
+#         conexion.commit()
+
 # ==================== Inicio ====================
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
+    # DB
+    #crear_usuario_por_defecto(conexion)
+    #crear_usuario_prueba(conexion)
+    
     # Repositories
     productos_repo = ProductosRepository(conexion)
     usuario_repo = UsuarioRepository(conexion)
@@ -67,10 +91,8 @@ if __name__ == "__main__":
         ValidacionCantidad(),
         ValidacionPrecio(),
         ValidacionMedida(),
-        ValidadorDuplicadoProducto(productos_service)
     ]
     validador_producto = CoordinadorValidaciones(validadores)
-
 
     # Saver
     saver = ProductoSaver(productos_service)

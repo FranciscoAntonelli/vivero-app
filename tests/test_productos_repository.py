@@ -71,10 +71,4 @@ class TestProductosRepository(TestCase):
         self.mock_cursor.execute.assert_called_once()
         self.mock_conexion.commit.assert_called_once()
 
-    def test_existe_producto(self):
-        self.mock_cursor.fetchone.return_value = (1,)
-
-        repo = ProductosRepository(self.mock_conexion)
-        existe = repo.existe_producto("Planta Rosa", "Exterior", "Mediana", id_excluir=2)
-
-        assert existe is True
+   

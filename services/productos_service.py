@@ -14,6 +14,3 @@ class ProductosService:
         
     def editar(self, producto):
         self.repo.editar(producto)
-    
-    def existe_producto(self, nombre, ubicacion, medida=None, id_excluir=None):
-        return self.repo.existe_producto(nombre, ubicacion, medida, id_excluir)

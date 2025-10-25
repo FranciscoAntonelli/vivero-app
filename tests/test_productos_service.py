@@ -33,20 +33,3 @@ class TestProductosService(unittest.TestCase):
         producto_mock = Mock()
         self.service.editar(producto_mock)
         self.mock_repo.editar.assert_called_once_with(producto_mock)
-
-    # --- existe_producto ---
-    def test_existe_producto_devuelve_true(self):
-        self.mock_repo.existe_producto.return_value = True
-
-        existe = self.service.existe_producto("flor", "estante", "unidad", 5)
-
-        self.mock_repo.existe_producto.assert_called_once_with("flor", "estante", "unidad", 5)
-        self.assertTrue(existe)
-
-    def test_existe_producto_devuelve_false(self):
-        self.mock_repo.existe_producto.return_value = False
-
-        existe = self.service.existe_producto("flor", "estante")
-
-        self.mock_repo.existe_producto.assert_called_once_with("flor", "estante", None, None)
-        self.assertFalse(existe)

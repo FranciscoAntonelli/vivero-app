@@ -1,7 +1,8 @@
 from models.producto import Producto
+from use_cases.productos.i_producto_saver import IProductoSaver
 
 
-class ProductoSaver:
+class ProductoSaver(IProductoSaver):
     """Esta clase se encarga de la creacion o actualizacion del producto"""
     def __init__(self, producto_service):
         self.producto_service = producto_service

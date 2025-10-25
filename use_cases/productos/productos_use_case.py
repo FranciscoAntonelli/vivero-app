@@ -27,26 +27,3 @@ class ProductosUseCase:
 
     def imprimir(self, productos, ventana):
         self.impresora.imprimir(productos, ventana)
-
-    def agregar_producto(self, producto):
-        # valido que no haya duplicado
-        self._validar_no_existe_producto(producto)
-        
-        # agrego el producto con el service
-        self.service.agregar(producto)
-
-    def _validar_no_existe_producto(self, producto):
-        if self.service.existe_producto(
-            producto.nombre,
-            producto.ubicacion,
-            producto.medida,
-            id_excluir=producto.id_producto
-        ):
-            raise Exception("Ya existe un producto con ese nombre, ubicación y medida.")
-        
-    def editar_producto(self, producto):
-        # valido que no haya duplicado
-        self._validar_no_existe_producto(producto)
-
-        # Edito el producto con el service que dentro tiene el repo
-        self.service.editar(producto)
