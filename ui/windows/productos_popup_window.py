@@ -74,7 +74,7 @@ class ProductoPopup(QDialog):
         categoria = self.inputCategoria.currentData()
         
         ubicacion_raw = self.inputUbicacion.currentText().strip()
-        ubicacion = '' if ubicacion_raw == "--- seleccionar ---" else ubicacion_raw
+        ubicacion = '' if ubicacion_raw == "--- Seleccionar ---" else ubicacion_raw
 
         medida = self.inputMedida.text().strip() or ''
         cantidad = int(self.inputCantidad.text()) if self.inputCantidad.text() else 0
