@@ -1,5 +1,5 @@
-from psycopg import errors
 from models.resultado_guardado import ResultadoGuardado
+from exceptions.error_violacion_unica import ErrorViolacionUnica
 
 
 class ProductoPopupUseCase:
@@ -19,11 +19,12 @@ class ProductoPopupUseCase:
 
         try:
             producto = self.saver.guardar(producto_dict, producto_existente)
-        except errors.UniqueViolation:
+
+        except ErrorViolacionUnica: 
             return ResultadoGuardado(
                 exito=False,
                 errores=["Ya existe un producto con el mismo nombre, medida y ubicación."]
-            )
+            ) 
         except Exception as e:
             return ResultadoGuardado(
                 exito=False,

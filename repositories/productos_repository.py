@@ -1,4 +1,6 @@
 from models.producto import Producto
+from psycopg import errors
+from exceptions.error_violacion_unica import ErrorViolacionUnica
 
 class ProductosRepository:
 
@@ -64,6 +66,9 @@ class ProductosRepository:
                     producto.creado_por
                 ))
             self.conexion.commit()
+        except errors.UniqueViolation:
+            self.conexion.rollback()
+            raise ErrorViolacionUnica("Ya existe un producto con el mismo nombre, medida y ubicación.")
         except Exception:
             self.conexion.rollback()
             raise
@@ -93,6 +98,9 @@ class ProductosRepository:
                 )
                 cursor.execute(consulta, valores)
                 self.conexion.commit()
+        except errors.UniqueViolation:
+            self.conexion.rollback()
+            raise ErrorViolacionUnica("Ya existe un producto con el mismo nombre, medida y ubicación.")
         except Exception:
             self.conexion.rollback()
             raise   
