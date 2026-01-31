@@ -25,7 +25,6 @@ from validators.login.validacion_campos_obligatorios import ValidacionCamposObli
 from validators.login.validacion_longitud_usuario import ValidacionLongitudUsuario
 from validators.productos.coordinador_validaciones_productos import CoordinadorValidaciones
 from validators.productos.validacion_nombre import ValidacionNombre
-from validators.productos.validacion_cantidad import ValidacionCantidad
 from validators.productos.validacion_precio import ValidacionPrecio
 from validators.productos.validacion_medida import ValidacionMedida
 
@@ -63,7 +62,6 @@ if __name__ == "__main__":
 
     validadores = [
         ValidacionNombre(),
-        ValidacionCantidad(),
         ValidacionPrecio(),
         ValidacionMedida(),
     ]
