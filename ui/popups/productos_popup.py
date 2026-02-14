@@ -1,27 +1,22 @@
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
-import psycopg
 
 from models.ubicacion import Ubicacion
 
 class ProductoPopup(QDialog):
-    def __init__(self, popup_use_case, usuario_logeado, producto=None):
+    def __init__(self, popup_use_case, categorias_use_case, usuario_logeado, producto=None):
         super().__init__()
-        self.inicializarUI(popup_use_case, usuario_logeado, producto)
-
-    def inicializarUI(self, popup_use_case, usuario_logeado, producto):
         self._use_case = popup_use_case
+        self._categorias_use_case = categorias_use_case
         self.usuario_logeado = usuario_logeado
         self.producto = producto
         self.resultado_guardado = None
 
-        self._cargar_ui()
+        loadUi("ui/designer/producto_popup.ui", self)
         self._configurar_ventana()
         self._cargar_datos_iniciales()
         self._conectar_signales()
 
-    def _cargar_ui(self):
-        loadUi("ui/designer/producto_popup.ui", self)
 
     def _configurar_ventana(self):
         self.setMinimumSize(self.geometry().width(), self.geometry().height())
@@ -37,7 +32,8 @@ class ProductoPopup(QDialog):
             self.setWindowTitle("Agregar producto")
 
     def _conectar_signales(self):
-        self.btnGuardar.clicked.connect(self.guardar_productos)
+        self.btnGuardar.accepted.connect(self.guardar_productos)
+        self.btnGuardar.rejected.connect(self.reject)
 
     def cargar_datos(self, producto):
         self.inputNombre.setText(producto.nombre)
@@ -46,7 +42,7 @@ class ProductoPopup(QDialog):
         self.inputCantidad.setValue(producto.cantidad or 0)
         self.inputPrecio.setValue(producto.precio_unitario or 0.0)
 
-        nombre_categoria = self._use_case.categorias_service.obtener_nombre_por_id(producto.categoria_id)
+        nombre_categoria = self._categorias_use_case.obtener_nombre_categoria(producto.categoria_id)
         for i in range(self.inputCategoria.count()):
             if self.inputCategoria.itemText(i) == nombre_categoria:
                 self.inputCategoria.setCurrentIndex(i)
@@ -73,12 +69,12 @@ class ProductoPopup(QDialog):
         nombre = self.inputNombre.text().strip()
         categoria = self.inputCategoria.currentData()
         
-        ubicacion_bruta = self.inputUbicacion.currentText().strip()
-        ubicacion = '' if ubicacion_bruta == "--- Seleccionar ---" else ubicacion_bruta
+        ubicacion_raw = self.inputUbicacion.currentText().strip()
+        ubicacion = '' if ubicacion_raw == "--- Seleccionar ---" else ubicacion_raw
 
         medida = self.inputMedida.text().strip() or ''
-        cantidad = int(self.inputCantidad.text()) if self.inputCantidad.text() else 0
-        precio_unitario = float(self.inputPrecio.text().replace(",", ".")) if self.inputPrecio.text() else 0.0
+        cantidad = int(self.inputCantidad.text())
+        precio_unitario = float(self.inputPrecio.text().replace(",", ".")) 
         creado_por = self.usuario_logeado.id_usuario
 
         return {
@@ -100,6 +96,7 @@ class ProductoPopup(QDialog):
             self._mostrar_errores(resultado.errores)
             return
         
-        self.resultado_guardado = resultado 
+        self.resultado_guardado = resultado #lo hago para q la tabla de productos pueda actualizarse
         self.accept()
 
+        

@@ -1,29 +1,33 @@
-class ProductosUseCase:
-    def __init__(self, productos_service, categorias_service, meta_service, validador, impresora):
-        self.service = productos_service
-        self.categorias_service = categorias_service
-        self.meta_service = meta_service
-        self.validador = validador
-        self.impresora = impresora
+from exceptions.producto_con_ventas_error import ProductoConVentasError
+from models.resultado_eliminacion import ResultadoEliminacion
+from use_cases.productos.iproductos_use_case import IProductosUseCase
 
+
+class ProductosUseCase(IProductosUseCase):
+
+    def __init__(self, productos_service):
+        self.productos_service = productos_service
 
     def obtener_productos(self, id_usuario, nombre=None):
-        return self.service.buscar(nombre, id_usuario)
-
-    def obtener_nombre_categoria(self, id_categoria):
-        return self.categorias_service.obtener_nombre_por_id(id_categoria)
-
-    def registrar_modificacion(self, id_usuario):
-        self.meta_service.registrar_modificacion(id_usuario)
-
-    def obtener_ultima_modificacion(self, id_usuario):
-        return self.meta_service.obtener_ultima_modificacion(id_usuario)
+        return self.productos_service.buscar(nombre, id_usuario)
 
     def eliminar_producto(self, id_producto):
-        try:
-            self.service.eliminar(id_producto)
-        except Exception as e:
-            raise Exception(f"No se pudo eliminar el producto: {e}")
+            try:
+                self.productos_service.eliminar(id_producto)
 
-    def imprimir(self, productos, ventana):
-        self.impresora.imprimir(productos, ventana)
+                return ResultadoEliminacion(exito=True)
+
+            except ProductoConVentasError:
+                return ResultadoEliminacion(
+                    exito=False,
+                    errores=["No se puede eliminar el producto porque tiene ventas asociadas."]
+                )
+
+            except Exception as e:
+                return ResultadoEliminacion(
+                    exito=False,
+                    errores=[f"Ocurrió un error inesperado al eliminar el producto: {e}"]
+                )
+       
+    def obtener_nombre(self, id_producto):
+        return self.productos_service.buscar_por_id(id_producto)

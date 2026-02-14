@@ -1,0 +1,2 @@
+class ProductoConVentasError(Exception):
+    pass

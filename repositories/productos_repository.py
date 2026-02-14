@@ -1,3 +1,4 @@
+from exceptions.producto_con_ventas_error import ProductoConVentasError
 from models.producto import Producto
 from psycopg import errors
 from exceptions.error_violacion_unica import ErrorViolacionUnica
@@ -46,9 +47,21 @@ class ProductosRepository:
     
 
     def eliminar(self, id_producto):
-        with self.conexion.cursor() as cursor:
-            cursor.execute("DELETE FROM productos WHERE id_producto = %s", (id_producto,))
+        try:
+            with self.conexion.cursor() as cursor:
+                cursor.execute(
+                    "DELETE FROM productos WHERE id_producto = %s",
+                    (id_producto,)
+                )
             self.conexion.commit()
+
+        except errors.ForeignKeyViolation:
+            self.conexion.rollback()  
+            raise ProductoConVentasError("No se puede eliminar el producto porque ya fue utilizado en ventas.")
+
+        except Exception as e:
+            self.conexion.rollback() 
+            raise
 
     def agregar(self, producto):
         try:
@@ -105,3 +118,46 @@ class ProductosRepository:
             self.conexion.rollback()
             raise   
     
+
+    def buscar_por_id(self, id_producto):
+        query = """
+            SELECT id_producto, nombre
+            FROM productos
+            WHERE id_producto = %s
+        """
+        with self.conexion.cursor() as cursor:
+            cursor.execute(query, (id_producto,))
+            fila = cursor.fetchone()
+
+        if not fila:
+            return None
+
+        return Producto(
+            id_producto=fila[0],
+            nombre=fila[1],
+            categoria_id=None,
+            ubicacion=None,
+            medida=None,
+            cantidad=None,
+            precio_unitario=None,
+            creado_por=None
+        )
+
+
+    def descontar_stock(self, id_producto, cantidad):
+        with self.conexion.cursor() as cursor:
+            cursor.execute("""
+                UPDATE productos
+                SET cantidad = cantidad - %s
+                WHERE id_producto = %s
+            """, (cantidad, id_producto))
+        self.conexion.commit()
+
+    def obtener_stock(self, id_producto):
+        query = "SELECT cantidad FROM productos WHERE id_producto = %s"
+        with self.conexion.cursor() as cursor:
+            cursor.execute(query, (id_producto,))
+            fila = cursor.fetchone()
+        if fila:
+            return fila[0]
+        return 0

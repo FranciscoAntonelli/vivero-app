@@ -1,23 +1,14 @@
 from models.producto import Producto
-from use_cases.productos.i_producto_saver import IProductoSaver
+from use_cases.productos.iproducto_saver import IProductoSaver
 
 
 class ProductoSaver(IProductoSaver):
-    """Esta clase se encarga de la creacion o actualizacion del producto"""
+
     def __init__(self, producto_service):
         self.producto_service = producto_service
 
     def guardar(self, producto_dict, producto_existente=None):
-        producto = Producto(
-            id_producto=producto_existente.id_producto if producto_existente else None,
-            nombre=producto_dict["nombre"],
-            categoria_id=producto_dict["categoria"],
-            ubicacion=producto_dict["ubicacion"],
-            medida=producto_dict["medida"],
-            cantidad=producto_dict["cantidad"],
-            precio_unitario=producto_dict["precio_unitario"],
-            creado_por=producto_dict["creado_por"]
-        )
+        producto = self._crear_producto(producto_dict, producto_existente)
 
         if producto_existente:
             self.producto_service.editar(producto)
@@ -25,3 +16,15 @@ class ProductoSaver(IProductoSaver):
             self.producto_service.agregar(producto)
 
         return producto
+
+    def _crear_producto(self, data, existente):
+        return Producto(
+            id_producto=existente.id_producto if existente else None,
+            nombre=data["nombre"],
+            categoria_id=data["categoria"],
+            ubicacion=data["ubicacion"],
+            medida=data["medida"],
+            cantidad=data["cantidad"],
+            precio_unitario=data["precio_unitario"],
+            creado_por=data["creado_por"]
+        )

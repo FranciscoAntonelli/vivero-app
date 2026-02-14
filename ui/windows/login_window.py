@@ -1,33 +1,45 @@
-from PyQt6.QtWidgets import QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QLineEdit
 from PyQt6.uic import loadUi
 from PyQt6.QtCore import pyqtSignal
+from ui.popups.registrar_usuario_popup import RegistrarUsuarioPopup
 
 class LoginWindow(QMainWindow):
     login_exitoso = pyqtSignal(object)
 
-    def __init__(self, login_use_case, on_login_success):
+    def __init__(self, login_use_case, registrar_usuario_use_case, on_login_success):
         super().__init__()
-        self._inicializarUI(login_use_case, on_login_success)
-
-    def _inicializarUI(self, login_use_case, on_login_success):
         self.login_use_case = login_use_case
+        self.registrar_usuario_use_case = registrar_usuario_use_case
         self.on_login_success = on_login_success
 
-        self._cargar_ui()
+        loadUi("ui/designer/login.ui", self)
         self._configurar_ventana()
         self._conectar_signales()
         self._mostrar()
-
-    def _cargar_ui(self):
-        loadUi("ui/designer/login.ui", self)
+        
 
     def _configurar_ventana(self):
         self.setMinimumSize(self.geometry().width(), self.geometry().height())
         self.setMaximumSize(self.geometry().width(), self.geometry().height())
+        
 
     def _conectar_signales(self):
         self.boton_login.clicked.connect(self.autenticar)
         self.login_exitoso.connect(self.on_login_success)
+        self.checkbox_mostrar_clave.stateChanged.connect(
+            self.mostrar_clave
+        )
+        self.boton_registrarse.clicked.connect(self.abrir_registro)
+
+    def abrir_registro(self):
+        dialog = RegistrarUsuarioPopup(self.registrar_usuario_use_case, self)
+        dialog.exec()
+
+    def mostrar_clave(self, estado):
+        if estado:  # checkbox tildado
+            self.clave_input.setEchoMode(QLineEdit.EchoMode.Normal)
+        else:       # checkbox destildado
+            self.clave_input.setEchoMode(QLineEdit.EchoMode.Password)
 
     def _mostrar(self):
         self.show()

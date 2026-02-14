@@ -1,8 +1,9 @@
 from models.resultado_guardado import ResultadoGuardado
 from exceptions.error_violacion_unica import ErrorViolacionUnica
+from use_cases.productos.iproducto_popup_use_case import IProductoPopupUseCase
 
 
-class ProductoPopupUseCase:
+class ProductoPopupUseCase(IProductoPopupUseCase):
     """coordina la validacion, el saver y el service del producto."""
     def __init__(self, coordinador_validaciones, saver, categorias_service):
         self.coordinador_validaciones = coordinador_validaciones

@@ -1,46 +1,58 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
 from PyQt6.uic import loadUi
-
-from use_cases.productos.producto_popup_use_case import ProductoPopupUseCase
-from ui.windows.productos_popup_window import ProductoPopup
+from ui.popups.productos_popup import ProductoPopup
+from PyQt6.QtCore import pyqtSignal
     
-class ProductosWindow(QMainWindow):
-    def __init__(self, producto_use_case, producto_popup_use_case, usuario_logeado):
-        super().__init__()
-        self.inicializarUI(producto_use_case, producto_popup_use_case, usuario_logeado)
+class ProductosWindow(QWidget):
+    volver_inicio = pyqtSignal()
 
-    def inicializarUI(self, producto_use_case, producto_popup_use_case, usuario_logeado):
-        self.producto_use_case = producto_use_case # Para la ventana completa
-        self.producto_popup_use_case = producto_popup_use_case # Para los popups
+    def __init__(self, productos_use_case, categorias_use_case,productos_meta_use_case, 
+        impresion_productos_use_case, producto_popup_use_case, usuario_logeado
+    ):
+        super().__init__()
+
+        self.productos_use_case = productos_use_case
+        self.categorias_use_case = categorias_use_case
+        self.productos_meta_use_case = productos_meta_use_case
+        self.impresion_productos_use_case = impresion_productos_use_case
+        self.producto_popup_use_case = producto_popup_use_case
         self.usuario_logeado = usuario_logeado
-        self._cargar_ui()
+
+        loadUi("ui/designer/productos.ui", self)
         self._configurar_ventana()
         self._conectar_signales()
         self.cargar_productos()
-        self._mostrar()
-
-    def _cargar_ui(self):
-        loadUi("ui/designer/productos.ui", self)
 
 
     def _configurar_ventana(self):
         self.tabla_productos.verticalHeader().setVisible(False)
         self.tabla_productos.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setMinimumSize(self.geometry().width(), self.geometry().height())
-        self.setMaximumSize(self.geometry().width(), self.geometry().height())
+        #self.setMinimumSize(self.geometry().width(), self.geometry().height())
+        #self.setMaximumSize(self.geometry().width(), self.geometry().height())
+
+        self.tabla_productos.setShowGrid(False)
+        self.tabla_productos.setAlternatingRowColors(True)
+        self.tabla_productos.verticalHeader().setDefaultSectionSize(36)
+
+        self.tabla_productos.horizontalHeader().setStretchLastSection(True)
+        self.tabla_productos.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+
+        self.tabla_productos.setAlternatingRowColors(False)
+
 
     def _conectar_signales(self):
         self.btnAgregar.clicked.connect(self.agregar_producto)
         self.buscarProducto.textChanged.connect(self.buscar_producto)
         self.btnImprimir.clicked.connect(self.imprimir_productos)
+        self.btn_volver.clicked.connect(self._volver)
 
     def _cargar_datos_iniciales(self):
         self.cargar_productos()
         
-    def _mostrar(self):
-        self.show()
 
     def cargar_productos(self):
         try:
@@ -51,7 +63,7 @@ class ProductosWindow(QMainWindow):
 
     # Metodo para obtener productos
     def _obtener_productos(self):
-        return self.producto_use_case.obtener_productos(self.usuario_logeado.id_usuario)
+        return self.productos_use_case.obtener_productos(self.usuario_logeado.id_usuario)
 
     # Método para actualizar la UI
     def _actualizar_ui_productos(self, productos):
@@ -62,6 +74,9 @@ class ProductosWindow(QMainWindow):
     def _mostrar_error(self, mensaje):
         QMessageBox.critical(self, "Error", mensaje)
 
+    def _volver(self):
+        self.volver_inicio.emit()
+
     def agregar_producto(self):
         resultado = self._abrir_popup_producto()
         if resultado and resultado.exito:
@@ -69,14 +84,14 @@ class ProductosWindow(QMainWindow):
 
     # abre el popup y devuelve el resultado
     def _abrir_popup_producto(self):
-        popup = ProductoPopup(self.producto_popup_use_case, self.usuario_logeado)
+        popup = ProductoPopup(self.producto_popup_use_case, self.categorias_use_case, self.usuario_logeado)
         if popup.exec():
             return popup.resultado_guardado
         return None
     
     # Actualizo la UI despues de guardar un producto
     def _actualizar_productos_despues_de_guardar(self):
-        self.producto_use_case.registrar_modificacion(self.usuario_logeado.id_usuario)
+        self.productos_meta_use_case.registrar_modificacion(self.usuario_logeado.id_usuario)
         self.actualizar_label_modificacion()
         self.cargar_productos()
                
@@ -88,7 +103,8 @@ class ProductosWindow(QMainWindow):
 
     # abre el popup de edicion y devuelve el resultado
     def _abrir_popup_editar_producto(self, producto):
-        popup = ProductoPopup(self.producto_popup_use_case, self.usuario_logeado, producto)
+        popup = ProductoPopup(self.producto_popup_use_case, self.categorias_use_case,
+                               self.usuario_logeado, producto)
         if popup.exec():
             return popup.resultado_guardado
         return None
@@ -102,14 +118,25 @@ class ProductosWindow(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
 
-        if confirmacion == QMessageBox.StandardButton.Yes:
-            try:
-                self.producto_use_case.eliminar_producto(producto.id_producto)
-                self.producto_use_case.registrar_modificacion(self.usuario_logeado.id_usuario) # Registro la modificaicon para actualizar el label
-                self.actualizar_label_modificacion()
-                self.cargar_productos()  # Recargo la tabla
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"No se pudo eliminar el producto: {e}")
+        if confirmacion != QMessageBox.StandardButton.Yes:
+            return
+
+        resultado = self.productos_use_case.eliminar_producto(producto.id_producto)
+
+        if not resultado.exito:
+            QMessageBox.warning(
+                self,
+                "No se pudo eliminar",
+                "\n".join(resultado.errores)
+            )
+            return
+
+        # Éxito
+        self.productos_meta_use_case.registrar_modificacion(
+            self.usuario_logeado.id_usuario
+        )
+        self.actualizar_label_modificacion()
+        self.cargar_productos()
 
 
     def _crear_item(self, texto):
@@ -158,7 +185,7 @@ class ProductosWindow(QMainWindow):
     # recorre los productos con el nombre de su categoria y los ordena
     def _preparar_productos_con_categoria(self, productos):
         productos_con_categoria = [
-            (self.producto_use_case.obtener_nombre_categoria(p.categoria_id), p)
+            (self.categorias_use_case.obtener_nombre_categoria(p.categoria_id), p)
             for p in productos
         ]
         return sorted(productos_con_categoria, key=lambda x: x[0] or "")
@@ -177,7 +204,15 @@ class ProductosWindow(QMainWindow):
             self.tabla_productos.setRowHeight(fila, 36)
 
         header = self.tabla_productos.horizontalHeader()
-        header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        acciones_col = self.tabla_productos.columnCount() - 1
+
+        # Columna acciones: fija
+        header.setSectionResizeMode(acciones_col, QHeaderView.ResizeMode.Fixed)
+        self.tabla_productos.setColumnWidth(acciones_col, 90)
+
+        # Resto de columnas: stretch
+        for col in range(acciones_col):
+            header.setSectionResizeMode(col, QHeaderView.ResizeMode.Stretch)
 
     # Mapea un producto con los datos que se muestran en la tabla
     def _mapear_producto_a_datos_tabla(self, producto, nombre_categoria):
@@ -199,20 +234,30 @@ class ProductosWindow(QMainWindow):
     def buscar_producto(self):
         nombre = self.buscarProducto.text()
         id_usuario = self.usuario_logeado.id_usuario
-        productos = self.producto_use_case.obtener_productos(id_usuario, nombre)
+        productos = self.productos_use_case.obtener_productos(id_usuario, nombre)
         self.poblar_tabla(productos)
 
     def imprimir_productos(self):
-        productos = self.producto_use_case.obtener_productos(self.usuario_logeado.id_usuario)
-        self.producto_use_case.imprimir(productos, self)
+        productos = self.productos_use_case.obtener_productos(self.usuario_logeado.id_usuario)
+        self.impresion_productos_use_case.ejecutar(productos)
 
     def actualizar_label_modificacion(self):
         try:
-            fecha = self.producto_use_case.obtener_ultima_modificacion(self.usuario_logeado.id_usuario)
+            fecha = self.productos_meta_use_case.obtener_ultima_modificacion(
+                self.usuario_logeado.id_usuario
+            )
+
             if fecha:
-                self.lbl_ultima_modificacion.setText(f"Última modificación: {fecha.strftime('%d/%m/%Y %H:%M:%S')}")
+                self.lbl_ultima_modificacion.setText(
+                    f"Última modificación: {fecha.strftime('%d/%m/%Y %H:%M:%S')}"
+                )
             else:
-                self.lbl_ultima_modificacion.setText("Última modificación: No disponible")
+                self.lbl_ultima_modificacion.setText(
+                    "Última modificación: No disponible"
+                )
+
         except Exception as e:
             print(f"[ERROR actualizar_label_modificacion] {e}")
-            self.lbl_ultima_modificacion.setText("Última modificación: Error al obtener")
+            self.lbl_ultima_modificacion.setText(
+                "Última modificación: Error al obtener"
+            )
