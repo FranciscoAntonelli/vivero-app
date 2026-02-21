@@ -1,6 +1,8 @@
 from ui.windows.productos_window import ProductosWindow
 from ui.windows.ventas_window import VentasWindow
 from ui.windows.login_window import LoginWindow
+from ui.windows.reportes_window import ReportesWindow
+from ui.windows.inicio_window import InicioWindow
 
 class Navigation:
 
@@ -30,3 +32,20 @@ class Navigation:
             self.container["productos_use_case"],
             usuario
         )
+
+        reportes_window = ReportesWindow(
+            self.container["reportes_use_case"],
+            self.container["imprimir_reportes_use_case"],
+            usuario,
+            self.container["grafico_renderer"]   
+        )
+
+        self.app.inicio_window = InicioWindow(
+            productos_window,
+            ventas_window,
+            reportes_window,
+            usuario,
+            on_logout=self.show_login
+        )
+
+        self.app.inicio_window.show()
