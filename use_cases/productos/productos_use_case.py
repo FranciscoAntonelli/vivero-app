@@ -1,5 +1,5 @@
 from exceptions.producto_con_ventas_error import ProductoConVentasError
-from models.resultado_eliminacion import ResultadoEliminacion
+from models.resultado import Resultado
 from use_cases.productos.iproductos_use_case import IProductosUseCase
 
 
@@ -15,19 +15,17 @@ class ProductosUseCase(IProductosUseCase):
             try:
                 self.productos_service.eliminar(id_producto)
 
-                return ResultadoEliminacion(exito=True)
+                return Resultado(exito=True)
 
             except ProductoConVentasError:
-                return ResultadoEliminacion(
+                return Resultado(
                     exito=False,
                     errores=["No se puede eliminar el producto porque tiene ventas asociadas."]
                 )
 
             except Exception as e:
-                return ResultadoEliminacion(
-                    exito=False,
-                    errores=[f"Ocurrió un error inesperado al eliminar el producto: {e}"]
-                )
+                raise Exception(f"No se pudo eliminar el producto: {str(e)}") from e
+
        
     def obtener_nombre(self, id_producto):
         return self.productos_service.buscar_por_id(id_producto)

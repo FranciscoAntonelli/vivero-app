@@ -36,6 +36,7 @@ class VentaPopup(QDialog):
         self.labelTotal.setText("Total: $0.00")
 
         self.tabla_carrito.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.tabla_carrito.verticalHeader().setVisible(False)
 
     def _conectar_signales(self):
         self.btnAgregar.clicked.connect(self.agregar_producto_al_carrito)
@@ -120,6 +121,7 @@ class VentaPopup(QDialog):
                     border-radius: 6px;
                 }
             """)
+            btn.setToolTip("Eliminar del carrito")
 
             # centrar el botón en la celda
             container = QWidget()

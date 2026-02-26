@@ -8,7 +8,7 @@ class TestProductosService(unittest.TestCase):
         self.mock_repo = Mock()
         self.service = ProductosService(self.mock_repo)
 
-    # --- buscar ---
+    # --- buscar ---z
     def test_buscar_con_parametros(self):
         self.mock_repo.buscar.return_value = ["producto1", "producto2"]
 

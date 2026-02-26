@@ -19,7 +19,7 @@ class UsuarioRepository:
         if fila is None:
             return None
         return Usuario(id_usuario=fila[0], nombre_usuario=fila[1], clave=fila[2])
-    
+
 
     def crear(self, usuario):
         try:

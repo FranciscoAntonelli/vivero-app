@@ -8,15 +8,20 @@ class LoginWindow(QMainWindow):
 
     def __init__(self, login_use_case, registrar_usuario_use_case, on_login_success):
         super().__init__()
+        self.inicializar_ui(login_use_case, registrar_usuario_use_case, on_login_success)
+
+    def inicializar_ui(self, login_use_case, registrar_usuario_use_case, on_login_success):
         self.login_use_case = login_use_case
         self.registrar_usuario_use_case = registrar_usuario_use_case
         self.on_login_success = on_login_success
 
-        loadUi("ui/designer/login.ui", self)
+        self._cargar_ui()
         self._configurar_ventana()
         self._conectar_signales()
         self._mostrar()
-        
+
+    def _cargar_ui(self):
+        loadUi("ui/designer/login.ui", self)
 
     def _configurar_ventana(self):
         self.setMinimumSize(self.geometry().width(), self.geometry().height())
@@ -59,7 +64,7 @@ class LoginWindow(QMainWindow):
             self.mostrar_errores(resultado.errores)
             return
 
-        self.login_exitoso.emit(resultado.usuario)
+        self.login_exitoso.emit(resultado.valor)
         self.close()
 
     def mostrar_errores(self, errores):

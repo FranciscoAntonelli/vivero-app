@@ -1,6 +1,6 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, Mock
-from models.resultado_guardado import ResultadoGuardado
+from unittest.mock import MagicMock
+from models.resultado import Resultado
 from use_cases.productos.producto_popup_use_case import ProductoPopupUseCase
 from models.producto import Producto
 
@@ -67,8 +67,8 @@ class TestProductoPopupUseCase(TestCase):
 
         # Assert
         self.assertTrue(resultado.exito)
-        self.assertIsInstance(resultado, ResultadoGuardado)
-        self.assertEqual(resultado.producto, producto)
+        self.assertIsInstance(resultado, Resultado)
+        self.assertEqual(resultado.valor, producto)
         self.mock_saver.guardar.assert_called_once_with(producto_dict, None)
 
     def test_guardar_producto_existente_actualiza_en_saver(self):

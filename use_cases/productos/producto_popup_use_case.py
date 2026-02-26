@@ -1,4 +1,4 @@
-from models.resultado_guardado import ResultadoGuardado
+from models.resultado import Resultado
 from exceptions.error_violacion_unica import ErrorViolacionUnica
 from use_cases.productos.iproducto_popup_use_case import IProductoPopupUseCase
 
@@ -16,20 +16,20 @@ class ProductoPopupUseCase(IProductoPopupUseCase):
     def guardar_producto(self, producto_dict, producto_existente=None):
         errores = self.coordinador_validaciones.validar(producto_dict)
         if errores:
-            return ResultadoGuardado(exito=False, errores=errores)
+            return Resultado(exito=False, errores=errores)
 
         try:
             producto = self.saver.guardar(producto_dict, producto_existente)
 
         except ErrorViolacionUnica: 
-            return ResultadoGuardado(
+            return Resultado(
                 exito=False,
                 errores=["Ya existe un producto con el mismo nombre, medida y ubicación."]
             ) 
         except Exception as e:
-            return ResultadoGuardado(
+            return Resultado(
                 exito=False,
                 errores=[f"Ocurrió un error inesperado al guardar el producto: {e}"]
             )
 
-        return ResultadoGuardado(exito=True, producto=producto)
+        return Resultado(exito=True, valor=producto)

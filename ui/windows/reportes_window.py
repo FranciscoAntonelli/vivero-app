@@ -20,7 +20,6 @@ class ReportesWindow(QWidget):
         self._configurar_ventana()
         self._configurar_tabs()
         self._conectar_signales()
-        self.cargar_reportes()
 
     def _configurar_ventana(self):
         self.tabla_reportes.verticalHeader().setVisible(False)
@@ -40,8 +39,17 @@ class ReportesWindow(QWidget):
     #       FUNCIONALIDADES
     # -------------------------
     def cargar_reportes(self):
-        reportes = self.reportes_use_case.obtener_reporte_diario(self.usuario_logeado.id_usuario)
-        self._poblar_tabla(reportes)
+        resultado = self.reportes_use_case.obtener_reporte_diario(self.usuario_logeado.id_usuario)
+
+        if not resultado.exito:
+            self._mostrar_error("\n".join(resultado.errores))
+            return
+
+        self._poblar_tabla(resultado.valor)
+        self.grafico_stock_producto()
+        self.grafico_stock_categoria()
+        self.grafico_ventas_mensuales()
+        self.grafico_productos_mas_vendidos()
           
 
     def _poblar_tabla(self, reportes):
@@ -63,11 +71,6 @@ class ReportesWindow(QWidget):
             self.tabla_reportes.setItem(fila, 1, item_cantidad)
             self.tabla_reportes.setItem(fila, 2, item_total)
 
-        self.grafico_stock_producto()
-        self.grafico_stock_categoria()
-        self.grafico_ventas_mensuales()
-        self.grafico_productos_mas_vendidos()
-
 
 
     def _volver(self):
@@ -75,10 +78,8 @@ class ReportesWindow(QWidget):
 
 
     def imprimir_resumen(self):
-        try:
-            self.imprimir_reportes_use_case.ejecutar(self.usuario_logeado.id_usuario)
-        except Exception as e:
-            self._mostrar_error(f"No se pudo imprimir el resumen: {e}")
+        self.imprimir_reportes_use_case.ejecutar(self.usuario_logeado.id_usuario)
+        
 
     # -------------------------
     #       UTILES
@@ -87,23 +88,31 @@ class ReportesWindow(QWidget):
         QMessageBox.critical(self, "Error", mensaje)
 
     def buscar_por_fechas(self):
-        try:
-            fecha_desde = self.fechaDesde.date().toPyDate()
-            fecha_hasta = self.fechaHasta.date().toPyDate()
+        
+        fecha_desde = self.fechaDesde.date().toPyDate()
+        fecha_hasta = self.fechaHasta.date().toPyDate()
 
-            reportes = self.reportes_use_case.obtener_reporte_diario(
-                self.usuario_logeado.id_usuario, fecha_desde, fecha_hasta
-            )
+        resultado = self.reportes_use_case.obtener_reporte_diario(
+            self.usuario_logeado.id_usuario, fecha_desde, fecha_hasta
+        )
 
+        if not resultado.exito:
+            self._mostrar_error("\n".join(resultado.errores))
+            return
+
+        if not resultado.valor:
             self.tabla_reportes.setRowCount(0)
+            # opcional: mostrar label informativo
+            QMessageBox.information(
+                self,
+                "Información",
+                "No hay datos en el rango seleccionado."
+            )
+            return
+        self._poblar_tabla(resultado.valor)
 
-            if not reportes:
-                return
-
-            self._poblar_tabla(reportes)
-
-        except Exception as e:
-            self._mostrar_error(f"Error al buscar reportes: {e}")
+           
+        
 
     def _configurar_tabs(self):
 

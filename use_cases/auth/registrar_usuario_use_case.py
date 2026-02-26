@@ -1,5 +1,5 @@
 from exceptions.usuario_ya_existe_error import UsuarioYaExisteError
-from models.resultado_registrar_usuario import ResultadoRegistroUsuario
+from models.resultado import Resultado
 from models.usuario import Usuario
 from use_cases.auth.iregistrar_usuario_use_case import IRegistrarUsuarioUseCase
 
@@ -11,6 +11,12 @@ class RegistrarUsuarioUseCase(IRegistrarUsuarioUseCase):
         self.validador = validador
 
     def ejecutar(self, nombre_usuario, password, password_confirm):
+
+        # Limpiar espacios en blanco
+        nombre_usuario = nombre_usuario.strip()
+        password = password.strip()
+        password_confirm = password_confirm.strip()
+
         data = {
             "usuario": nombre_usuario,
             "password": password,
@@ -19,16 +25,17 @@ class RegistrarUsuarioUseCase(IRegistrarUsuarioUseCase):
 
         errores = self.validador.validar(data)
         if errores:
-            return ResultadoRegistroUsuario(False, errores)
+            return Resultado(False, None, errores)
         
         try:
             password_hash = self.password_hasher.hash(password)
             usuario = Usuario(None, nombre_usuario, password_hash)
             self.usuario_repository.crear(usuario)
-            return ResultadoRegistroUsuario(True)
+            return Resultado(True)
 
         except UsuarioYaExisteError:
-            return ResultadoRegistroUsuario(
+            return Resultado(
                 False,
+                None,
                 ["El nombre de usuario ya está en uso."]
             )

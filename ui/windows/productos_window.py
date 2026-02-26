@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QMessageBox, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt6 import QtCore
 from PyQt6.QtGui import QIcon
 from PyQt6.uic import loadUi
@@ -20,10 +20,12 @@ class ProductosWindow(QWidget):
         self.producto_popup_use_case = producto_popup_use_case
         self.usuario_logeado = usuario_logeado
 
-        loadUi("ui/designer/productos.ui", self)
+        self._cargar_ui()
         self._configurar_ventana()
         self._conectar_signales()
-        self.cargar_productos()
+
+    def _cargar_ui(self):
+        loadUi("ui/designer/productos.ui", self)
 
 
     def _configurar_ventana(self):
@@ -32,7 +34,6 @@ class ProductosWindow(QWidget):
         #self.setMinimumSize(self.geometry().width(), self.geometry().height())
         #self.setMaximumSize(self.geometry().width(), self.geometry().height())
 
-        self.tabla_productos.setShowGrid(False)
         self.tabla_productos.setAlternatingRowColors(True)
         self.tabla_productos.verticalHeader().setDefaultSectionSize(36)
 
@@ -172,7 +173,10 @@ class ProductosWindow(QWidget):
         btn.setIcon(QIcon(icon_path))
         btn.setIconSize(QtCore.QSize(24, 24))
         btn.setFixedSize(32, 32)
-        btn.setStyleSheet("QPushButton { border: none; background: transparent; }")
+        btn.setStyleSheet("""
+                        QPushButton { border: none; background: transparent; }
+                        QPushButton:hover { background-color: #ffe5e5; border-radius: 6px;
+        }""")
         btn.setToolTip(tooltip)
         btn.clicked.connect(callback)
         return btn

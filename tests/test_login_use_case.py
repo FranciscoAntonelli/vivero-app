@@ -1,8 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from models.resultado_autenticacion import ResultadoAutenticacion
-from use_cases.login.login_use_case import LoginUseCase
+from models.resultado import Resultado
+from use_cases.auth.login_use_case import LoginUseCase
 
 class TestLoginUseCase(TestCase):
 
@@ -18,7 +18,7 @@ class TestLoginUseCase(TestCase):
         use_case = LoginUseCase(mock_service, mock_validador)
         resultado = use_case.autenticar("", "123")
 
-        assert isinstance(resultado, ResultadoAutenticacion)
+        assert isinstance(resultado, Resultado)
         assert not resultado.exito
         assert "Usuario vacío" in resultado.errores
 
@@ -34,4 +34,4 @@ class TestLoginUseCase(TestCase):
         resultado = use_case.autenticar("juan", "1234")
 
         assert resultado.exito
-        assert resultado.usuario == mock_usuario
+        assert resultado.valor == mock_usuario

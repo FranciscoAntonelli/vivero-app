@@ -21,7 +21,7 @@ class TestMetaService(unittest.TestCase):
 
         resultado = self.service.obtener_ultima_modificacion("fran")
 
-        self.assertEqual(resultado, "No registrada")
+        self.assertEqual(resultado, None)
         self.mock_repo.obtener_fecha_modificacion.assert_called_once_with("fran")
 
     def test_registrar_modificacion(self):

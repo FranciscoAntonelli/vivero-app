@@ -6,7 +6,6 @@ class DetalleVentaRepository:
         self.db_connection = db_connection
 
     def mapear_a_detalle_venta(self, fila):
-        print(fila)
         return DetalleVenta(
             id_detalle=fila[0],
             id_venta=fila[1],

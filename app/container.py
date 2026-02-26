@@ -1,6 +1,7 @@
 from db.db import conexion
 
 from domain.creators.venta_creator import VentaCreator
+from utils.impresion.impresora_reportes import ImpresoraReportes
 from repositories.productos_repository import ProductosRepository
 from repositories.categorias_repository import CategoriasRepository
 from repositories.usuarios_repository import UsuarioRepository
@@ -16,23 +17,21 @@ from services.meta_service import MetaService
 from services.venta_domain_service import VentaDomainService
 from services.ventas_service import VentasService
 from services.detalle_venta_service import DetalleVentaService
-from services.password_hasher import PasswordHasher
 from services.reportes_service import ReportesService
+from services.password_hasher import PasswordHasher
 
 from use_cases.categorias.categorias_use_case import CategoriasUseCase
 from use_cases.impresoras.imprimir_productos_use_case import ImprimirProductosUseCase
+from use_cases.impresoras.imprimir_reportes_use_case import ImprimirReportesUseCase
 from use_cases.meta.productos_meta_use_case import ProductosMetaUseCase
 from use_cases.ventas.ventas_query import VentasQuery
-from use_cases.impresoras.imprimir_reportes_use_case import ImprimirReportesUseCase
-
 from validators.coincidencia_contrasenia_validador import CoincidenciaContraseniaValidador
 from validators.coordinador_validaciones import CoordinadorValidaciones
 from validators.campos_obligatorios_validador import CamposObligatoriosValidador
 from validators.longitud_maxima_validador import LongitudMaximaValidador
+from validators.rango_fechas_validador import RangoFechasValidador
 
 from utils.impresion.impresora_productos import ImpresoraProductos
-from utils.impresion.impresora_reportes import ImpresoraReportes
-
 from infrastructure.reportes.matplotlib_grafico_renderer import MatplotlibGraficoRenderer
 
 from use_cases.auth.login_use_case import LoginUseCase
@@ -42,7 +41,6 @@ from use_cases.productos.producto_popup_use_case import ProductoPopupUseCase
 from use_cases.productos.producto_saver import ProductoSaver
 from use_cases.ventas.ventas_use_case import VentaUseCase
 from use_cases.reportes.reportes_use_case import ReportesUseCase
-
 from validators.longitud_minima_validador import LongitudMinimaValidador
 from validators.valor_positivo_validador import ValorPositivoValidador
 
@@ -66,8 +64,11 @@ def build_container():
     ventas_service = VentasService(ventas_repo)
     detalle_service = DetalleVentaService(detalle_repo)
     reportes_service = ReportesService(reportes_repo)
+    
 
     # Validators
+    rango_fechas_validador = RangoFechasValidador()
+
     login_validator = CoordinadorValidaciones([
         CamposObligatoriosValidador({
             "usuario": "El usuario es obligatorio.",
@@ -99,8 +100,10 @@ def build_container():
  
     impresora_productos = ImpresoraProductos()
     impresora_reportes = ImpresoraReportes()
-
     saver = ProductoSaver(productos_service)
+    grafico_renderer = MatplotlibGraficoRenderer()
+
+    reportes_use_case = ReportesUseCase(reportes_service, rango_fechas_validador)
 
     venta_creator = VentaCreator()
     venta_domain_service = VentaDomainService(
@@ -141,10 +144,9 @@ def build_container():
         "venta_use_case": VentaUseCase(
             venta_creator,
             venta_domain_service,
-            ventas_query_service
+            ventas_query_service,
+            rango_fechas_validador
         ),
-        "reportes_use_case": ReportesUseCase(
-            reportes_service
-        ),
-        "grafico_renderer": MatplotlibGraficoRenderer()
+        "reportes_use_case": reportes_use_case,
+        "grafico_renderer": grafico_renderer
     }

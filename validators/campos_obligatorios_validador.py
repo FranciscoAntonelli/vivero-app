@@ -8,6 +8,6 @@ class CamposObligatoriosValidador(Validador):
         errores = []
         for campo, mensaje in self.campos.items():
             valor = data.get(campo)
-            if not valor.strip():
+            if valor is None or not str(valor).strip():
                 errores.append(mensaje)
         return errores

@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QMessageBox, QWidget, QTableWidgetItem, QHeaderView, QHBoxLayout
 from PyQt6.uic import loadUi
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -18,18 +18,15 @@ class VentasWindow(QWidget):
         loadUi("ui/designer/ventas.ui", self)
         self._configurar_ventana()
         self._conectar_signales()
-        self.cargar_ventas()
 
     def _configurar_ventana(self):
         # Tabla ventas
         self.tabla_ventas.verticalHeader().setVisible(False)
-        self.tabla_ventas.setShowGrid(False)
         self.tabla_ventas.setAlternatingRowColors(True)
         self.tabla_ventas.verticalHeader().setDefaultSectionSize(36)
 
         # Tabla detalles
         self.tabla_detalle_venta.verticalHeader().setVisible(False)
-        self.tabla_detalle_venta.setShowGrid(False)
         self.tabla_detalle_venta.setAlternatingRowColors(True)
         self.tabla_detalle_venta.verticalHeader().setDefaultSectionSize(36)
 
@@ -41,13 +38,20 @@ class VentasWindow(QWidget):
             QHeaderView.ResizeMode.Stretch
         )
 
-
         self.contenedorDetalles.hide()
         self.contenedorDetalles.setMaximumWidth(0)
 
+        font = QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        self.labelTotal.setFont(font)
+
+        self.tabla_ventas.setAlternatingRowColors(False)
+        self.tabla_detalle_venta.setAlternatingRowColors(False)
+
     def _conectar_signales(self):
         self.botonRegistrarVenta.clicked.connect(self.abrir_popup_venta)
-        self.botonBuscar.clicked.connect(self.buscar)
+        self.botonBuscar.clicked.connect(self.buscar_por_fechas)
         self.tabla_ventas.itemSelectionChanged.connect(self.mostrar_detalles)
         self.btn_volver.clicked.connect(self._volver)
         self.tabla_ventas.setAlternatingRowColors(False)
@@ -55,31 +59,46 @@ class VentasWindow(QWidget):
     def _volver(self):
         self.volver_inicio.emit()
 
-    def buscar(self):
-        texto = self.buscarVenta.text()
+    def buscar_por_fechas(self):
         fecha_inicio = self.fechaDesde.date().toPyDate() 
         fecha_fin = self.fechaHasta.date().toPyDate() 
-        self.cargar_ventas(texto, fecha_inicio, fecha_fin)
-
-    
-    def cargar_ventas(self, filtro_texto=None, fecha_inicio=None, fecha_fin=None):
-        ventas = self.ventas_use_case.obtener_ventas(
+        resultado = self.ventas_use_case.obtener_ventas(
             self.usuario_logeado.id_usuario,
             fecha_inicio,
             fecha_fin
         )
 
-        if filtro_texto:
-            ventas = [
-                v for v in ventas
-                #if filtro_texto in str(v["id_venta"])
-                if filtro_texto in v["id_venta"]
-            ]
+        if not resultado.exito:
+            self._mostrar_error("\n".join(resultado.errores))
+            return
+        
+        if not resultado.valor:
+            self.tabla_ventas.setRowCount(0)
+            self.labelTotal.setText("Total general: $0.00")
 
-        self._cargar_tabla_ventas(ventas)
+            QMessageBox.information(self, "Información", "No hay ventas en el rango seleccionado.")
+            return
+
+        self._poblar_tabla(resultado.valor)
+
+    
+    def cargar_ventas(self):
+        resultado = self.ventas_use_case.obtener_ventas(self.usuario_logeado.id_usuario)
+
+        if not resultado.exito:
+            self._mostrar_error("\n".join(resultado.errores))
+            return
+
+        ventas = resultado.valor
+        if not ventas:
+            self.tabla_ventas.setRowCount(0)
+            self.labelTotal.setText("Total general: $0.00")
+            return
+
+        self._poblar_tabla(ventas)
 
 
-    def _cargar_tabla_ventas(self, ventas):
+    def _poblar_tabla(self, ventas):
         self.tabla_ventas.setRowCount(len(ventas))
 
         total_general = 0
@@ -171,3 +190,7 @@ class VentasWindow(QWidget):
         item = QTableWidgetItem(texto)
         item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         return item
+
+
+    def _mostrar_error(self, mensaje):
+        QMessageBox.critical(self, "Error", mensaje)

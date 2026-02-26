@@ -71,16 +71,7 @@ QLabel {
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">QTableWidget {
-    background-color: white;
-    alternate-background-color: #f6f6f6;
-    gridline-color: transparent;
-}
-
-QTableWidget::item {
-    border-bottom: 1px solid #dcdcdc;
-}
-</string>
+          <string notr="true"/>
          </property>
          <property name="alternatingRowColors">
           <bool>false</bool>
@@ -205,7 +196,6 @@ QTableWidget::item {
      <widget class="QLabel" name="lbl_ultima_modificacion">
       <property name="font">
        <font>
-        <family>Arial</family>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -266,7 +256,6 @@ QTableWidget::item {
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
     </font>
    </property>
    <property name="styleSheet">
@@ -306,7 +295,6 @@ QPushButton:hover {
    </property>
    <property name="font">
     <font>
-     <family>Arial</family>
      <weight>75</weight>
      <bold>true</bold>
     </font>

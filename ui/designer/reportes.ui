@@ -347,15 +347,7 @@ QScrollBar::sub-page:vertical {
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">QTableWidget {
-    background-color: white;
-    alternate-background-color: #f6f6f6;
-    gridline-color: transparent;
-}
-
-QTableWidget::item {
-    border-bottom: 1px solid #dcdcdc;
-}</string>
+    <string notr="true"/>
    </property>
    <column>
     <property name="text">

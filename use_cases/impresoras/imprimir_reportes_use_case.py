@@ -13,4 +13,5 @@ class ImprimirReportesUseCase(IImprimirReportesUseCase):
 
         self.impresora.imprimir(reportes)
 
+
        

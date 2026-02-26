@@ -1,4 +1,4 @@
-from models.resultado_autenticacion import ResultadoAutenticacion
+from models.resultado import Resultado
 from use_cases.auth.ilogin_use_case import ILoginUseCase
 
 
@@ -12,11 +12,10 @@ class LoginUseCase(ILoginUseCase):
 
         errores = self.validador.validar(data)
         if errores:
-            return ResultadoAutenticacion(exito=False, errores=errores)
+            return Resultado(exito=False, errores=errores)
         
         usuario_obj = self.login_service.verificar_credenciales(usuario, clave)
         if not usuario_obj:
-            return ResultadoAutenticacion(exito=False, errores=["Usuario o contraseña incorrectos."])
+            return Resultado(exito=False, errores=["Usuario o contraseña incorrectos."])
         
-        return ResultadoAutenticacion(exito=True, usuario=usuario_obj)
-    
+        return Resultado(exito=True, valor=usuario_obj)
