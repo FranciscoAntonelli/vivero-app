@@ -1,4 +1,4 @@
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.ventas.iventas_use_case import IVentasUseCase
 
 

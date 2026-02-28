@@ -1,5 +1,5 @@
 from exceptions.producto_con_ventas_error import ProductoConVentasError
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.productos.iproductos_use_case import IProductosUseCase
 
 

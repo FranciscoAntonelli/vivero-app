@@ -3,7 +3,7 @@ from PyQt6.uic import loadUi
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, pyqtSignal
 
-from domain.ventas.carrito_venta import CarritoVenta
+from domain.models.carrito_venta import CarritoVenta
 from ui.popups.venta_popup import VentaPopup 
 
 class VentasWindow(QWidget):

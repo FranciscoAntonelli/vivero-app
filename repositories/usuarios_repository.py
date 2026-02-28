@@ -1,4 +1,4 @@
-from models.usuario import Usuario
+from domain.models.usuario import Usuario
 from psycopg import errors
 from exceptions.usuario_ya_existe_error import UsuarioYaExisteError
 

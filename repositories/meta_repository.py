@@ -1,4 +1,4 @@
-from models.producto_meta import ProductoMeta
+from domain.models.producto_meta import ProductoMeta
 
 
 class MetaRepository:

@@ -1,4 +1,4 @@
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from exceptions.error_violacion_unica import ErrorViolacionUnica
 from use_cases.productos.iproducto_popup_use_case import IProductoPopupUseCase
 

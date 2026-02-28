@@ -1,5 +1,5 @@
 from matplotlib.figure import Figure
-from infrastructure.reportes.grafico_renderer import GraficoRenderer
+from infrastructure.graficos.grafico_renderer import GraficoRenderer
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 class MatplotlibGraficoRenderer(GraficoRenderer):

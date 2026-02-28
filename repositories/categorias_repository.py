@@ -1,4 +1,4 @@
-from models.categoria import Categoria
+from domain.models.categoria import Categoria
 
 
 class CategoriasRepository:

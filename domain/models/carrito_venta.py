@@ -1,5 +1,5 @@
 from decimal import Decimal
-from domain.ventas.item_carrito import ItemCarrito
+from domain.models.item_carrito import ItemCarrito
 
 class CarritoVenta:
     def __init__(self):

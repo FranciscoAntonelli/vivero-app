@@ -1,4 +1,4 @@
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.reportes.ireportes_use_case import IReportesUseCase
 
 

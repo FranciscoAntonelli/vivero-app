@@ -1,5 +1,5 @@
 from datetime import datetime
-from models.venta import Venta
+from domain.models.venta import Venta
 
 
 class VentaCreator:

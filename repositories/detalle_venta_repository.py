@@ -1,4 +1,4 @@
-from models.detalle_venta import DetalleVenta
+from domain.models.detalle_venta import DetalleVenta
 
 
 class DetalleVentaRepository:

@@ -1,6 +1,6 @@
 from exceptions.usuario_ya_existe_error import UsuarioYaExisteError
-from models.resultado import Resultado
-from models.usuario import Usuario
+from domain.models.resultado import Resultado
+from domain.models.usuario import Usuario
 from use_cases.auth.iregistrar_usuario_use_case import IRegistrarUsuarioUseCase
 
 

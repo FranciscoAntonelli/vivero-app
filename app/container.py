@@ -1,7 +1,6 @@
 from db.db import conexion
 
 from domain.creators.venta_creator import VentaCreator
-from utils.impresion.impresora_reportes import ImpresoraReportes
 from repositories.productos_repository import ProductosRepository
 from repositories.categorias_repository import CategoriasRepository
 from repositories.usuarios_repository import UsuarioRepository
@@ -31,8 +30,9 @@ from validators.campos_obligatorios_validador import CamposObligatoriosValidador
 from validators.longitud_maxima_validador import LongitudMaximaValidador
 from validators.rango_fechas_validador import RangoFechasValidador
 
-from utils.impresion.impresora_productos import ImpresoraProductos
-from infrastructure.reportes.matplotlib_grafico_renderer import MatplotlibGraficoRenderer
+from infrastructure.impresion.impresora_reportes import ImpresoraReportes
+from infrastructure.impresion.impresora_productos import ImpresoraProductos
+from infrastructure.graficos.matplotlib_grafico_renderer import MatplotlibGraficoRenderer
 
 from use_cases.auth.login_use_case import LoginUseCase
 from use_cases.auth.registrar_usuario_use_case import RegistrarUsuarioUseCase

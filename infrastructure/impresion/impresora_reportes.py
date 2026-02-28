@@ -1,7 +1,7 @@
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
 from PyQt6.QtGui import QPainter, QFont
 
-from utils.impresion.impresora import Impresora
+from infrastructure.impresion.impresora import Impresora
 
 
 class ImpresoraReportes(Impresora):

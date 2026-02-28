@@ -1,5 +1,5 @@
 from exceptions.producto_con_ventas_error import ProductoConVentasError
-from models.producto import Producto
+from domain.models.producto import Producto
 from psycopg import errors
 from exceptions.error_violacion_unica import ErrorViolacionUnica
 

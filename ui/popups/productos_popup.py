@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QDialog, QMessageBox
 from PyQt6.uic import loadUi
 
-from models.ubicacion import Ubicacion
+from domain.models.ubicacion import Ubicacion
 
 class ProductoPopup(QDialog):
     def __init__(self, popup_use_case, categorias_use_case, usuario_logeado, producto=None):

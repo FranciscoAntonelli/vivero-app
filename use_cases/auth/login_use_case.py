@@ -1,4 +1,4 @@
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.auth.ilogin_use_case import ILoginUseCase
 
 
