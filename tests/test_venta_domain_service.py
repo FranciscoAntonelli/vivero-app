@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 from services.venta_domain_service import VentaDomainService
-from models.venta import Venta
+from domain.models.venta import Venta
 
 class TestVentaDomainService:
     def setup_method(self):

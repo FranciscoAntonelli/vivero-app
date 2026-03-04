@@ -1,8 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.productos.producto_popup_use_case import ProductoPopupUseCase
-from models.producto import Producto
+from domain.models.producto import Producto
 
 class TestProductoPopupUseCase(TestCase):
 

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 from services.categorias_service import CategoriasService
-from models.categoria import Categoria
+from domain.models.categoria import Categoria
 
 class TestCategoriasService(TestCase):
 

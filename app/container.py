@@ -13,6 +13,7 @@ from services.productos_service import ProductosService
 from services.login_service import LoginService
 from services.categorias_service import CategoriasService
 from services.meta_service import MetaService
+from services.usuario_service import UsuarioService
 from services.venta_domain_service import VentaDomainService
 from services.ventas_service import VentasService
 from services.detalle_venta_service import DetalleVentaService
@@ -59,6 +60,7 @@ def build_container():
     productos_service = ProductosService(productos_repo)
     password_hasher = PasswordHasher()
     login_service = LoginService(usuario_repo, password_hasher)
+    usuario_service = UsuarioService(usuario_repo, password_hasher)
     categorias_service = CategoriasService(categorias_repo)
     meta_service = MetaService(meta_repo)
     ventas_service = VentasService(ventas_repo)
@@ -119,7 +121,7 @@ def build_container():
     # Use cases
     return {
         "login_use_case": LoginUseCase(login_service, login_validator),
-        "registrar_usuario_use_case": RegistrarUsuarioUseCase(usuario_repo, password_hasher, registro_validadores),
+        "registrar_usuario_use_case": RegistrarUsuarioUseCase(usuario_service, registro_validadores),
         "productos_use_case": ProductosUseCase(
             productos_service
         ),

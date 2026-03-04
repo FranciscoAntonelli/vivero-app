@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from services.login_service import LoginService
-from models.usuario import Usuario
+from domain.models.usuario import Usuario
 
 
 class TestLoginService(unittest.TestCase):

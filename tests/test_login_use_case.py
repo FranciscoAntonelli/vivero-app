@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from models.resultado import Resultado
+from domain.models.resultado import Resultado
 from use_cases.auth.login_use_case import LoginUseCase
 
 class TestLoginUseCase(TestCase):

@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock
 from datetime import datetime
 from repositories.meta_repository import MetaRepository
-from models.producto_meta import ProductoMeta
+from domain.models.producto_meta import ProductoMeta
 
 
 class TestMetaRepository(TestCase):

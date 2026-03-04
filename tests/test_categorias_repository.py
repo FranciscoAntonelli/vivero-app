@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
-from models.categoria import Categoria
+from domain.models.categoria import Categoria
 from repositories.categorias_repository import CategoriasRepository
 
 class TestCategoriasRepository(TestCase):

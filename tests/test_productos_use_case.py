@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from use_cases.productos.productos_use_case import ProductosUseCase
-from models.producto import Producto
+from domain.models.producto import Producto
 
 
 class TestProductosUseCase(unittest.TestCase):

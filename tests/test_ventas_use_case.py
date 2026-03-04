@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 from use_cases.ventas.ventas_use_case import VentaUseCase
-from models.venta import Venta
+from domain.models.venta import Venta
 
 
 class TestVentaUseCase(unittest.TestCase):

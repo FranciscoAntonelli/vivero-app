@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock
-from models.producto import Producto
+from domain.models.producto import Producto
 from use_cases.productos.producto_saver import ProductoSaver
 
 class TestProductoSaver(TestCase):
