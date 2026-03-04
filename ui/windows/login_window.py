@@ -35,6 +35,9 @@ class LoginWindow(QMainWindow):
             self.mostrar_clave
         )
         self.boton_registrarse.clicked.connect(self.abrir_registro)
+        
+        self.usuario_input.returnPressed.connect(self.clave_input.setFocus)
+        self.clave_input.returnPressed.connect(self.autenticar)
 
     def abrir_registro(self):
         dialog = RegistrarUsuarioPopup(self.registrar_usuario_use_case, self)
