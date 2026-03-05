@@ -3,7 +3,7 @@
 ## 1. Descripción
 El presente proyecto consiste en el desarrollo de un Sistema de Gestión de Ventas que permite administrar productos, registrar ventas y generar reportes estadísticos por usuario.
 
-El sistema fue desarrollado como aplicación de escritorio utilizando Python y una arquitectura basada en casos de uso.
+El sistema fue desarrollado como aplicación de escritorio utilizando Python y una arquitectura en capas con separación mediante casos de uso.
 
 
 ## 2. Objetivos del Sistema
@@ -30,13 +30,16 @@ El sistema está estructurado bajo una arquitectura por capas:
   Ventanas, popups.
 
 - Casos de Uso (Use Cases)
-  Lógica de negocio desacoplada de la interfaz.
+  Implementan acciones específicas del sistema.
 
-- Entidades / Dominio
-  Modelos como Usuario, Producto, Venta, Carrito.
+- Servicios 
+  Contienen lógica de negocio reutilizable
 
 - Persistencia
   Repositorios responsables del acceso a datos y conexión a base de datos.
+
+- Entidades / Dominio
+  Modelos como Usuario, Producto, Venta, Carrito.
 
 Esta separación permite:
 - Mayor mantenibilidad
@@ -71,7 +74,46 @@ Esta separación permite:
    - Ventas mensuales
    - Productos más vendidos
 
-## 6. Requisitos para Ejecutar el Sistema
+## 6. Funcionamiento General del Sistema
+
+El flujo general de uso de la aplicación es el siguiente:
+
+### 1. Inicio de sesión
+- El usuario puede registrarse creando una nueva cuenta.
+- Luego puede iniciar sesión con su nombre de usuario y contraseña.
+- Cada usuario gestiona únicamente sus propios productos y ventas.
+
+### 2. Gestión de productos
+- El usuario puede agregar nuevos productos al sistema.
+- Es posible editar o eliminar productos existentes.
+- Los productos se organizan por categorías y poseen control de stock.
+- Cada producto registra información como nombre, categoría, ubicación, medida, cantidad y precio.
+
+### 3. Registro de ventas
+- El usuario puede registrar una venta mediante un carrito de compras.
+- Se seleccionan productos y se especifica la cantidad a vender.
+- El sistema valida automáticamente que exista stock suficiente.
+- Se calcula el subtotal por producto y el total general de la venta.
+
+### 4. Confirmación de venta
+Cuando el usuario confirma la venta, el sistema:
+
+- Registra la venta en la base de datos.
+- Guarda el detalle de cada producto vendido.
+- Actualiza automáticamente el stock de los productos.
+
+### 5. Reportes
+El sistema permite generar reportes de información para el usuario:
+
+- Reporte diario de ventas.
+- Búsqueda de ventas por rango de fechas.
+- Visualización de gráficos estadísticos como:
+  - Ventas mensuales
+  - Productos más vendidos
+  - Stock por producto
+  - Stock por categoría
+
+## 7. Requisitos para Ejecutar el Sistema
 - Python 3.12.9 instalado
 - Instalar dependencias necesarias:
 ```bash
@@ -81,7 +123,7 @@ Ejecutar:
 ```bash
 python main.py
 ```
-## 7. Estructura del Proyecto
+## 8. Estructura del Proyecto
 ```bash
 /app              → Punto de entrada y configuración principal
 /ui               → Interfaces gráficas (ventanas y popups)
@@ -98,7 +140,7 @@ python main.py
 /tests            → Pruebas unitarias
 ```
 
-## 8. Pruebas Realizadas
+## 9. Pruebas Realizadas
 - Pruebas de registro y login.
 - Validación de errores en formularios.
 - Pruebas con usuario sin datos.
@@ -107,7 +149,7 @@ python main.py
 - Pruebas de consistencia visual en tablas.
 
 
-## 9. Estado Final del Proyecto
+## 10. Estado Final del Proyecto
 
 El sistema se encuentra:
 
@@ -117,12 +159,12 @@ El sistema se encuentra:
 - ✔ Con mejoras de consistencia visual
 
 
-## 10. Modelo Entidad–Relación
+## 11. Modelo Entidad–Relación
 
 ![Modelo ER](docs/screenshots/modelo_er.PNG)
 
 
-## 11. Capturas de Pantalla
+## 12. Capturas de Pantalla
 
 ### Inicio
 ![Dashboard](docs/screenshots/dashboard.PNG)
