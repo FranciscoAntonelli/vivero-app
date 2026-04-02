@@ -15,10 +15,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-QTableWidget {
-    border: 1px solid #ddd;
-    font-size: 14px;
-}
 QLabel {
     font-weight: bold;
     font-size: 14px;
@@ -196,6 +192,7 @@ QLabel {
      <widget class="QLabel" name="lbl_ultima_modificacion">
       <property name="font">
        <font>
+        <pointsize>-1</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -213,7 +210,7 @@ QLabel {
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>26</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
@@ -256,6 +253,7 @@ QLabel {
    </property>
    <property name="font">
     <font>
+     <pointsize>-1</pointsize>
     </font>
    </property>
    <property name="styleSheet">
@@ -295,6 +293,7 @@ QPushButton:hover {
    </property>
    <property name="font">
     <font>
+     <pointsize>-1</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>

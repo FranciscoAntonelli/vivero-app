@@ -163,8 +163,11 @@ El sistema se encuentra:
 
 ![Modelo ER](docs/screenshots/modelo_er.PNG)
 
+## 12. Diagrama de clases
+![Clases](docs/diagramas/diagrama.png)
 
-## 12. Capturas de Pantalla
+
+## 13. Capturas de Pantalla
 
 ### Inicio
 ![Dashboard](docs/screenshots/dashboard.PNG)

@@ -1,0 +1,92 @@
+@startuml
+left to right direction
+
+' UI
+package "UI" {
+    class loginWindow
+    class inicioWindow
+    class productosWindow
+    class ventasWindow
+    class reportesWindow
+}
+
+' Use Cases
+package "Use Cases" {
+    interface ILoginUseCase
+    class loginUseCase
+    interface IProductosUseCase
+    class productosUseCase
+    interface IVentasUseCase
+    class ventasUseCase
+    interface IReportesUseCase
+    class reportesUseCase
+
+    ILoginUseCase <|.. loginUseCase
+    IProductosUseCase <|.. productosUseCase
+    IVentasUseCase <|.. ventasUseCase
+    IReportesUseCase <|.. reportesUseCase
+}
+
+' Services
+package "Services" {
+    class usuariosService
+    class productosService
+    class ventasService
+    class reportesService
+}
+
+' Repositories
+package "Repositories" {
+    class productoRepository
+    class ventaRepository
+    class usuariosRepository
+    class reportesRepository
+}
+
+' Entities
+package "Entities" {
+    class productos
+    class categorias
+    class usuarios
+
+    package "Ventas" {
+        class ventas
+        class detalleVentas
+        ventas *-- detalleVentas
+        ventas --> usuarios
+        detalleVentas --> productos
+    }
+
+    productos --> categorias
+    productos --> usuarios
+}
+
+' Relaciones UI -> UseCases
+productosWindow ..> productosUseCase
+ventasWindow ..> ventasUseCase
+reportesWindow ..> reportesUseCase
+loginWindow ..> loginUseCase
+
+' Relaciones UseCases -> Services
+productosUseCase ..> productosService
+ventasUseCase ..> ventasService
+reportesUseCase ..> reportesService
+loginUseCase ..> usuariosService
+
+' Relaciones Services -> Repos
+productosService ..> productoRepository
+ventasService ..> ventaRepository
+usuariosService ..> usuariosRepository
+reportesService ..> reportesRepository
+
+' Repos -> Entities
+productoRepository --> productos
+ventaRepository --> ventas
+usuariosRepository --> usuarios
+reportesRepository --> ventas
+
+inicioWindow ..> productosWindow
+inicioWindow ..> ventasWindow
+inicioWindow ..> reportesWindow
+
+@enduml
