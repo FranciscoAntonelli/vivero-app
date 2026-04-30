@@ -439,7 +439,6 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>-1</pointsize>
     </font>
    </property>
    <property name="styleSheet">

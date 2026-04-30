@@ -26,7 +26,7 @@ class ImpresoraReportes(Impresora):
         header = f"{'Fecha':<15}{'Cantidad':>12}{'Total':>15}"
         painter.drawText(100, y, header)
         y += 20
-        painter.drawLine(100, y, 800, y)
+        painter.drawLine(100, y, 650, y)
         y += 20
 
         for fecha, cantidad, total in reportes:
@@ -36,7 +36,7 @@ class ImpresoraReportes(Impresora):
             y += line_height
 
         y += 20
-        painter.drawLine(100, y, 800, y)
+        painter.drawLine(100, y, 650, y)
         y += line_height
 
         total_texto = f"{'TOTAL GENERAL:':<22}{f'${total_general:.2f}':>23}"

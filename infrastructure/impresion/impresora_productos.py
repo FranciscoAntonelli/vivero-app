@@ -27,7 +27,7 @@ class ImpresoraProductos(Impresora):
         header = f"{'Nombre':<25}{'Precio':>15}{'Cantidad':>14}{'Subtotal':>14}"
         painter.drawText(100, y, header)
         y += 20
-        painter.drawLine(100, y, 800, y) #el 800 es el margen derecho y la y final es la misma q la inicial pero horizontal
+        painter.drawLine(100, y, 920, y)
         y += 20
 
         for linea in lineas:
@@ -36,7 +36,7 @@ class ImpresoraProductos(Impresora):
             y += 30
 
         y += 20
-        painter.drawLine(100, y, 800, y)
+        painter.drawLine(100, y, 920, y)
         y += 30
         total_texto = f"{'TOTAL GENERAL:':<60}${total_general:>.2f}" #el :<60 es para q el total este alineado a la derecha y el :>.2f es para q tenga 2 decimales
         painter.drawText(100, y, total_texto)

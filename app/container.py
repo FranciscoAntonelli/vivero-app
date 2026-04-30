@@ -84,8 +84,8 @@ def build_container():
             "password": "La contraseña es obligatoria.",
             "password_confirm": "Debe confirmar la contraseña."
         }),
-        LongitudMinimaValidador("password", 6),
-        LongitudMinimaValidador("usuario", 3),
+        LongitudMinimaValidador("password", 6, "La contraseña"),
+        LongitudMinimaValidador("usuario", 3, "El usuario"),
         CoincidenciaContraseniaValidador(),
     ])
 
